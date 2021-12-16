@@ -6,8 +6,8 @@ Portions Copyright (c) 2012-2013, The Cryptonote developers
 
 ## Development Resources
 
-- Web: [lethean.io](https://lethean.io/)
-- GitHub: [https://github.com/LetheanMovement/lethean](https://github.com/LetheanMovement/lethean)
+- Web: [www.lt.hn](https://www.lt.hn)
+- GitHub: [https://github.com/letheanVPN/blockchain](https://github.com/letheanVPN/blockchain)
 - Social media: [Discord](https://discord.gg/6ARhyAc), [Twitter](https://t.me/letheanVPN), [Facebook](https://www.facebook.com/lethean.io/), [LinkedIn](https://www.linkedin.com/company/lethean/), [Reddit](https://www.reddit.com/r/Lethean), [Medium](https://medium.com/@letheanVPN), [YouTube](https://www.youtube.com/channel/UCKa_Nw7JysDxgcBJYnraUVA/featured?view_as=subscriber)
 
 ## Introduction
@@ -91,6 +91,20 @@ invokes cmake commands as needed.
 #### On Linux and OS X
 
 * Install the dependencies
+
+```shell
+sudo add-apt-repository ppa:kzemek/boost -y
+
+sudo apt-get install -y ca-certificates \
+      cmake \
+      g++ \
+      boost1.58 \
+      git \
+      libssl-dev \
+      make \
+      pkg-config
+```
+
 * Change to the root of the source code directory and build:
 
         cd lethean
