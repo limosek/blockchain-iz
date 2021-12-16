@@ -26,7 +26,7 @@ jobs:
           context: .
           push: false
           pull: true
-          args: RELEASE_TYPE=${{ matrix.target }}
+          build-args: RELEASE_TYPE=${{ matrix.target }}
           target: build-result
           tags: lthn/chain:${{ matrix.target }}-cache
           outputs: type=local,dest=${{ github.workspace }}/lthn-release
