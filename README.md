@@ -8,7 +8,7 @@
 - Exchange: [BTC-LTHN](https://tradeogre.com/exchange/BTC-LTHN), [LTC-LTHN](https://tradeogre.com/exchange/LTC-LTHN)
 - Social media: [Discord](https://discord.gg/6ARhyAc), [Twitter](https://twitter.com/letheanVPN), [Facebook](https://www.facebook.com/lethean.io/), [LinkedIn](https://www.linkedin.com/company/lethean/), [Reddit](https://www.reddit.com/r/Lethean), [Medium](https://medium.com/@letheanVPN), [YouTube](https://www.youtube.com/channel/UCKa_Nw7JysDxgcBJYnraUVA/featured?view_as=subscriber)
 - Docker Hub: [lthn/chain:release-3.1.0](https://hub.docker.com/r/lthn/chain/tags?page=1&name=release-3.1)
-- Links: Links: [LICENSE](LICENSE), [CONTRIBUTING](CONTRIBUTING.md), [Vulnerability Response Process](VULNERABILITY_RESPONSE_PROCESS.md)
+- Links: [LICENSE](LICENSE), [CONTRIBUTING](CONTRIBUTING.md), [Vulnerability Response Process](VULNERABILITY_RESPONSE_PROCESS.md)
 
 ## Sponsors
 Docker              |  GitLab
