@@ -7,10 +7,6 @@
 - Web: [www.lt.hn](https://lt.hn/)
 - Social media: [Discord](https://discord.gg/6ARhyAc), [Twitter](https://t.me/letheanVPN)
 
-Copyright (c) 2017-2021, LetheanVPN \
-Copyright (c) 2014-2019, The Monero Project\
-Copyright (c) 2012-2013, The CryptoNote developers
-
 ## Sponsors
 Docker              |  GitLab
 :-------------------------:|:-------------------------:
