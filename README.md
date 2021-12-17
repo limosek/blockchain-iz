@@ -1,4 +1,4 @@
-# Lethean Blockchain
+# Lethean (LTHN)
 
 [![macOS](https://github.com/letheanVPN/blockchain/actions/workflows/macos.yml/badge.svg?branch=release-3.1.0)](https://github.com/letheanVPN/blockchain/actions/workflows/macos.yml)
 [![Windows](https://github.com/letheanVPN/blockchain/actions/workflows/windows.yml/badge.svg?branch=release-3.1.0)](https://github.com/letheanVPN/blockchain/actions/workflows/windows.yml)
