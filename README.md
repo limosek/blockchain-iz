@@ -11,17 +11,6 @@
 - Links: [LICENSE](LICENSE), [CONTRIBUTING](CONTRIBUTING.md), [Vulnerability Response Process](VULNERABILITY_RESPONSE_PROCESS.md)
 - Compile: [BUILD.md](BUILD.md)
 
-## Sponsors
-Docker              |  GitLab
-:-------------------------:|:-------------------------:
-![Docker](https://www.docker.com/sites/default/files/d8/2019-07/horizontal-logo-monochromatic-white.png)  |  ![GitLab](https://about.gitlab.com/images/press/logo/png/gitlab-logo-gray-rgb.png)
-Our Docker Hub has no limitations placed on our docker images, You can even use our precompiled cmake toolchain for your own projects! | GitLab provide us with enterprise grade tools to check for security issues, with their DevOps tools we dog food test the VPN.
-Resources | Signup
-https://hub.docker.com/r/lthn/chain \ https://www.docker.com/products/docker-desktop | https://about.gitlab.com/pricing/
-
-
-## About this Project
-
 LTHN Cryptocurrency was founded from the CryptoNote project in July 2017, To enable Confidential payments using
 CryptoNote distributed ledger technology, this ensures that users remain anonymous by default, Confidential by choice.
 
@@ -39,5 +28,14 @@ If you have a fix or code change, feel free to submit it as a pull request direc
 Lethean uses a fixed-schedule hard fork mechanism to implement new features. This means that users of Lethean (end users and service providers) need to run current versions and update their software on a regular schedule.
 
 **The last hard fork was on March 9, 2019. Version 3.1.0 (Congo) or later of the software is required to be compliant with the latest hard fork!**
+
+
+## Sponsors
+Docker              |  GitLab
+:-------------------------:|:-------------------------:
+![Docker](https://www.docker.com/sites/default/files/d8/2019-07/horizontal-logo-monochromatic-white.png)  |  ![GitLab](https://about.gitlab.com/images/press/logo/png/gitlab-logo-gray-rgb.png)
+Our Docker Hub has no limitations placed on our docker images, You can even use our precompiled cmake toolchain for your own projects! | GitLab provide us with enterprise grade tools to check for security issues, with their DevOps tools we dog food test the VPN.
+Resources | Signup
+https://hub.docker.com/r/lthn/chain \ https://www.docker.com/products/docker-desktop | https://about.gitlab.com/pricing/
 
 
