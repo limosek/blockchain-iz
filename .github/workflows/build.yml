@@ -34,7 +34,7 @@ jobs:
         restore-keys: ccache-${{ runner.os }}-build-
     - name: install dependencies
       run: brew install hidapi openssl zmq libpgm miniupnpc ldns expat libunwind-headers protobuf ccache
-      run: brew install --build-from-source ./utils/homebrew/boost@169.rb
+    - run: brew install --build-from-source ./utils/homebrew/boost@169.rb
     - name: build
       run: |
         ${{env.CCACHE_SETTINGS}}
