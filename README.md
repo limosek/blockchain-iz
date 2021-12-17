@@ -1,6 +1,8 @@
 # Lethean Blockchain
 
-[![Build](https://github.com/letheanVPN/blockchain/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/letheanVPN/blockchain/actions/workflows/build.yml)
+[![macOS](https://github.com/letheanVPN/blockchain/actions/workflows/macos.yml/badge.svg?branch=release-3.1.0)](https://github.com/letheanVPN/blockchain/actions/workflows/macos.yml)
+[![Windows](https://github.com/letheanVPN/blockchain/actions/workflows/windows.yml/badge.svg?branch=release-3.1.0)](https://github.com/letheanVPN/blockchain/actions/workflows/windows.yml)
+[![Linux](https://github.com/letheanVPN/blockchain/actions/workflows/linux.yml/badge.svg?branch=release-3.1.0)](https://github.com/letheanVPN/blockchain/actions/workflows/linux.yml)
 
 - Web: [www.lt.hn](https://lt.hn/)
 - Social media: [Discord](https://discord.gg/6ARhyAc), [Twitter](https://t.me/letheanVPN)
@@ -10,17 +12,14 @@ Portions Copyright (c) 2014-2019, The Monero Project\
 Portions Copyright (c) 2012-2013, The CryptoNote developers
 
 ## Sponsors
+Docker              |  GitLab
+:-------------------------:|:-------------------------:
+![Docker](https://www.docker.com/sites/default/files/d8/2019-07/horizontal-logo-monochromatic-white.png)  |  ![GitLab](https://about.gitlab.com/images/press/logo/png/gitlab-logo-gray-rgb.png)
+Our Docker Hub has no limitations placed on our docker images, You can even use our precompiled cmake toolchain for your own projects! | GitLab provide us with enterprise grade tools to check for security issues, with their DevOps tools we dog food test the VPN.
+Resources | Signup
+https://hub.docker.com/r/lthn/chain \ https://www.docker.com/products/docker-desktop | https://about.gitlab.com/pricing/
 
-![Docker](https://www.docker.com/sites/default/files/d8/2019-07/horizontal-logo-monochromatic-white.png "Docker")
 
-With Docker's support there are no limitations placed on our docker images, You can even use our precompiled cmake toolchain for your own projects! Thanks Docker <3.
-
-https://hub.docker.com/r/lthn/chain
-
-To get Started: https://www.docker.com/products/docker-desktop
-![GitLab](https://about.gitlab.com/images/press/logo/png/gitlab-logo-gray-rgb.png "GitLab")
-GitLab provide us with enterprise grade tools to check for security issues, with their DevOps tools we dog food test the VPN.
-To make a free account with private repos and shared runners: https://about.gitlab.com/pricing/
 ## About this Project
 
 LTHN Cryptocurrency was founded from the CryptoNote project in July 2017, To enable Confidential payments using
