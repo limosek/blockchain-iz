@@ -17,8 +17,7 @@ env:
         ccache --set-config=compression=true
 
 jobs:
-
-  build-ubuntu:
+  ubuntu:
     runs-on: ${{ matrix.os }}
     env:
       CCACHE_TEMPDIR: /tmp/.ccache-temp

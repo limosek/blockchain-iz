@@ -9,7 +9,7 @@ env:
         ccache --set-config=compression=true
 
 jobs:
-  build-windows:
+  windows:
     runs-on: windows-latest
     env:
       CCACHE_TEMPDIR: C:\Users\runneradmin\.ccache-temp

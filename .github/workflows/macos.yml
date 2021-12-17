@@ -17,7 +17,7 @@ env:
         ccache --set-config=compression=true
 
 jobs:
-  build-macos:
+  macos:
     runs-on: macos-latest
     env:
       HOMEBREW_MAKE_JOBS: 2
