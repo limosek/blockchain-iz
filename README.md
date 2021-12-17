@@ -5,7 +5,9 @@
 [![Linux](https://github.com/letheanVPN/blockchain/actions/workflows/linux.yml/badge.svg?branch=release-3.1.0)](https://github.com/letheanVPN/blockchain/actions/workflows/linux.yml)
 
 - Web: [www.lt.hn](https://lt.hn/)
-- Social media: [Discord](https://discord.gg/6ARhyAc), [Twitter](https://t.me/letheanVPN)
+- Social media: [Discord](https://discord.gg/6ARhyAc), [Twitter](https://twitter.com/letheanVPN)
+- Exchange: [BTC-LTHN](https://tradeogre.com/exchange/BTC-LTHN), [LTC-LTHN](https://tradeogre.com/exchange/LTC-LTHN)
+- Docker Hub: [lthn/chain:release-3.1.0](https://hub.docker.com/r/lthn/chain/tags?page=1&name=release-3.1)
 
 ## Sponsors
 Docker              |  GitLab
