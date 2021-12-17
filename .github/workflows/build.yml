@@ -75,7 +75,7 @@ jobs:
       CCACHE_TEMPDIR: /tmp/.ccache-temp
     strategy:
       matrix:
-        os: [ubuntu-latest, ubuntu-18.04]
+        os: [ubuntu-18.04]
     steps:
     - uses: actions/checkout@v1
       with:
@@ -99,7 +99,7 @@ jobs:
         ${{env.BUILD_DEFAULT_LINUX}}
 
   libwallet-ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     env:
       CCACHE_TEMPDIR: /tmp/.ccache-temp
     steps:
@@ -127,7 +127,7 @@ jobs:
 
   test-ubuntu:
     needs: build-ubuntu
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     env:
       CCACHE_TEMPDIR: /tmp/.ccache-temp
     steps:
@@ -177,4 +177,4 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: ${{ env.OUTPUT }}
-        path: /home/runner/work/monero/monero/${{ env.OUTPUT }}
+        path: /home/runner/work/letheanVPN/blockchain/${{ env.OUTPUT }}
