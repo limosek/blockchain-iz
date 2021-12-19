@@ -409,14 +409,15 @@ std::string get_nix_version_display_string()
     /* Please for the love of god refactor  the ifdefs out of this */
 
     // namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\CRYPTONOTE_NAME
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\CRYPTONOTE_NAME
-    // Mac: ~/Library/Application Support/CRYPTONOTE_NAME
-    // Unix: ~/.CRYPTONOTE_NAME
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\CRYPTONOTE_NAME\data
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\CRYPTONOTE_NAME\data
+	// Windows >= Windows 7: C:\ProgramData\CRYPTONOTE_NAME\data
+    // Mac: ~/Library/Application Support/CRYPTONOTE_NAME/data
+    // Unix: ~/CRYPTONOTE_NAME/data
     std::string config_folder;
 
 #ifdef WIN32
-    config_folder = get_special_folder_path(CSIDL_COMMON_APPDATA, true) + "\\" + CRYPTONOTE_NAME;
+    config_folder = get_special_folder_path(CSIDL_COMMON_APPDATA, true) + "\\" + CRYPTONOTE_NAME + "\\" + CRYPTONOTE_BLOCKCHAINDATA_FOLDERNAME;
 #else
     std::string pathRet;
     char* pszHome = getenv("HOME");
@@ -427,10 +428,10 @@ std::string get_nix_version_display_string()
 #ifdef MAC_OSX
     // Mac
     pathRet /= "Library/Application Support";
-    config_folder =  (pathRet + "/" + CRYPTONOTE_NAME);
+    config_folder =  (pathRet + "/" + CRYPTONOTE_NAME + "/" + CRYPTONOTE_BLOCKCHAINDATA_FOLDERNAME);
 #else
     // Unix
-    config_folder = (pathRet + "/." + CRYPTONOTE_NAME);
+    config_folder = (pathRet + "/" + CRYPTONOTE_NAME + "/" + CRYPTONOTE_BLOCKCHAINDATA_FOLDERNAME);
 #endif
 #endif
 

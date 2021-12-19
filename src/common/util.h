@@ -65,13 +65,15 @@ namespace tools
 
   /*! \brief Returns the default data directory.
    *
-   * \details Windows < Vista: C:\\Documents and Settings\\Username\\Application Data\\CRYPTONOTE_NAME
+   * \details Windows < Vista: C:\\Documents and Settings\\Username\\Application Data\\CRYPTONOTE_NAME\\data
    *
-   * Windows >= Vista: C:\\Users\\Username\\AppData\\Roaming\\CRYPTONOTE_NAME
+   * Windows >= Vista: C:\\Users\\Username\\AppData\\Roaming\\CRYPTONOTE_NAME\\data
+   * 
+   * Windows >= Windows 7: C:\\ProgramData\\CRYPTONOTE_NAME\\data
    *
-   * Mac: ~/Library/Application Support/CRYPTONOTE_NAME
+   * Mac: ~/Library/Application Support/CRYPTONOTE_NAME/data
    *
-   * Unix: ~/.CRYPTONOTE_NAME
+   * Unix: ~/CRYPTONOTE_NAME/data
    */
   std::string get_default_data_dir();
 
