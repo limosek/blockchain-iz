@@ -409,14 +409,14 @@ namespace nodetool
     std::set<std::string> full_addrs;
     if (testnet) //CHANGE ME
     {
-		full_addrs.insert("88.99.61.2:38772");
+		full_addrs.insert("88.99.61.2:38772"); // rick.nodes.lthn.io
     }
     else
     {
-      full_addrs.insert("88.99.61.2:48772");
-      full_addrs.insert("95.216.32.162:48772");
-	  full_addrs.insert("46.4.23.58:48772");
-
+      full_addrs.insert("88.99.61.2:48772"); // rick.nodes.lthn.io
+      full_addrs.insert("95.216.32.162:48772"); // serap.is
+	  full_addrs.insert("46.4.23.58:48772"); // node.hashvault.pro
+      // Community Nodes
       full_addrs.insert("89.221.223.126:48772");
     }
     return full_addrs;
