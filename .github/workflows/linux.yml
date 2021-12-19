@@ -62,4 +62,4 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: ${{ env.OUTPUT }}
-        path: /home/runner/work/blockchain/${{ env.OUTPUT }}
+        path: /home/runner/work/blockchain/blockchain/${{ env.OUTPUT }}
