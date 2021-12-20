@@ -94,13 +94,13 @@ namespace daemonizer
     if (admin)
     {
       return boost::filesystem::absolute(
-          tools::get_special_folder_path(CSIDL_COMMON_APPDATA, true) + "\\" + CRYPTONOTE_NAME
+          tools::get_special_folder_path(CSIDL_COMMON_APPDATA, true) + "\\" + CRYPTONOTE_NAME + "\\" + CRYPTONOTE_BLOCKCHAINDATA_FOLDERNAME
         );
     }
     else
     {
       return boost::filesystem::absolute(
-          tools::get_special_folder_path(CSIDL_APPDATA, true) + "\\" + CRYPTONOTE_NAME
+          tools::get_special_folder_path(CSIDL_APPDATA, true) + "\\" + CRYPTONOTE_NAME + "\\" + CRYPTONOTE_BLOCKCHAINDATA_FOLDERNAME
         );
     }
   }

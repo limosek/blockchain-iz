@@ -16,14 +16,22 @@ synchronized to match the rest of the network.
 
 Windows:
  - double-click the daemon: letheand.exe
- - blockchain data is stored in: C:\Users\[USERNAME]\AppData\Roaming\intensecoin
-
-Linux or macOS:
+ - blockchain data is stored in:
+   - Windows < Vista: 	C:\Documents and Settings\Username\Application Data\Lethean\data
+   - Windows >= Vista: 	C:\Users\Username\AppData\Roaming\Lethean\data
+   - Windows >= Windows 7: C:\ProgramData\Lethean\data
+	
+Linux
  - open the terminal
  - change into the CLI archive directory: $ cd lethean-cli-archive-directory/
  - run the daemon: $ ./letheand
- - blockchain data is stored in: ~/.intensecoin
-
+ - blockchain data is stored in: ~/Lethean/data
+ 
+ MacOS
+ - open the terminal
+ - change into the CLI archive directory: $ cd lethean-cli-archive-directory/
+ - run the daemon: $ ./letheand
+ - Mac: ~/Library/Application Support/Lethean/data
 
 Synchronization can take several hours the first time. To check on progress, simply type
 "status" and press enter. This is how you execute commands on the daemon. After it has
