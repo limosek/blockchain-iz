@@ -32,6 +32,7 @@
 
 #include <boost/thread/locks.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/filesystem.hpp>
 #include <system_error>
 #include <csignal>
 #include <cstdio>
@@ -76,6 +77,13 @@ namespace tools
    * Unix: ~/CRYPTONOTE_NAME/data
    */
   std::string get_default_data_dir();
+
+  /* Returns the default OLD data directory.
+    Used for migration to NEW data directory */
+  std::string get_default_old_data_dir();
+  
+  /* Copy the directory (files included) and its internal directory recursively.*/
+  bool copyDirectoryRecursively(const boost::filesystem::path& sourceDir, const boost::filesystem::path& destinationDir, bool check);
 
 #ifdef WIN32
   /**
