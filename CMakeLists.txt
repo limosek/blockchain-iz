@@ -33,7 +33,7 @@ endif()
 
 cmake_minimum_required(VERSION 2.8.7)
 
-project(monero)
+project(LetheanVPN)
 
 function (die msg)
   if (NOT WIN32)
@@ -334,6 +334,10 @@ if(STATIC AND NOT IOS)
   if(UNIX)
     set(OPENSSL_LIBRARIES "${OPENSSL_LIBRARIES};${CMAKE_DL_LIBS}")
   endif()
+endif()
+
+if (WIN32)
+  list(APPEND OPENSSL_LIBRARIES ws2_32 crypt32)
 endif()
 
 if (UNIX AND NOT APPLE)

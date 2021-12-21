@@ -102,7 +102,7 @@ namespace nodetool
     const command_line::arg_descriptor<int64_t> arg_limit_rate_down = {"limit-rate-down", "set limit-rate-down [kB/s]", -1};
     const command_line::arg_descriptor<int64_t> arg_limit_rate = {"limit-rate", "set limit-rate [kB/s]", -1};
 
-    const command_line::arg_descriptor<bool> arg_save_graph = {"save-graph", "Save data for dr monero", false};
+    const command_line::arg_descriptor<bool> arg_save_graph = {"save-graph", "Save data for diagnostics", false};
   }
   //-----------------------------------------------------------------------------------
   template<class t_payload_net_handler>
@@ -409,19 +409,15 @@ namespace nodetool
     std::set<std::string> full_addrs;
     if (testnet) //CHANGE ME
     {
-		full_addrs.insert("192.124.18.154:38772");
+		full_addrs.insert("88.99.61.2:38772"); // rick.nodes.lthn.io
     }
     else
     {
-      full_addrs.insert("192.124.18.154:48772");
-      full_addrs.insert("45.32.171.89:48772");
-	  full_addrs.insert("45.63.69.34:48772");
-	  full_addrs.insert("62.48.164.61:48772");
-	  full_addrs.insert("35.205.108.96:48772");
-	  full_addrs.insert("195.154.133.155:48772");
-	  full_addrs.insert("69.162.83.203:48772");
-	  full_addrs.insert("111.231.72.116:48772");
-    full_addrs.insert("89.221.223.126:48772");
+      full_addrs.insert("88.99.61.2:48772"); // rick.nodes.lthn.io
+      full_addrs.insert("95.216.32.162:48772"); // serap.is
+	  full_addrs.insert("46.4.23.58:48772"); // node.hashvault.pro
+      // Community Nodes
+      full_addrs.insert("89.221.223.126:48772");
     }
     return full_addrs;
   }
@@ -504,7 +500,7 @@ namespace nodetool
         if (result.size())
         {
           for (const auto& addr_string : result)
-            full_addrs.insert(addr_string + ":18080");
+            full_addrs.insert(addr_string + ":48772");
         }
         ++i;
       }
