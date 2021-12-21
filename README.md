@@ -27,13 +27,6 @@ cryptocurrency ecosystem effortlessly, keeping transactional and operational dat
 
 If you have a fix or code change, feel free to submit it as a pull request directly to the "main" branch.
 
-
-## Lethean software updates and consensus protocol changes (hard fork schedule)
-
-Lethean uses a fixed-schedule hard fork mechanism to implement new features. This means that users of Lethean (end users and service providers) need to run current versions and update their software on a regular schedule.
-
-**The last hard fork was on March 9, 2019. Version 3.1.0 (Congo) or later of the software is required to be compliant with the latest hard fork!**
-
 ## Sponsors
 Docker              |  GitLab
 :-------------------------:|:-------------------------:
