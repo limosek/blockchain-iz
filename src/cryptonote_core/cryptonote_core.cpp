@@ -291,11 +291,34 @@ namespace cryptonote
     boost::filesystem::path folder(m_config_folder);
     if (m_fakechain)
       folder /= "fake";
-
-    // make sure the data directory exists, and try to lock it
-    CHECK_AND_ASSERT_MES (boost::filesystem::exists(folder) || boost::filesystem::create_directories(folder), false,
-      std::string("Failed to create directory ").append(folder.string()).c_str());
-
+  
+	  const boost::filesystem::path old_data = tools::get_default_old_data_dir();
+	  const boost::filesystem::path new_data = tools::get_default_data_dir();
+    /* Check if old block chain data exist */
+	if (boost::filesystem::exists(old_data / "lmdb" / "data.mdb"))
+    {	
+      /* Check if new block chain data exist */
+      if (false == boost::filesystem::exists(new_data / "lmdb" / "data.mdb"))
+      {
+		MWARNING("Found old blockchain data in " << old_data.string());
+		try 
+		{
+		  if (tools::copyDirectoryRecursively(old_data, new_data, false))
+		  {
+		    //Maybe we can rename the old log if needed --> boost::filesystem::rename(new_data / std::string(OLD_CRYPTONOTE_NAME ".log"), new_data / std::string(CRYPTONOTE_NAME ".log"));
+			MGINFO("Move old blockchain data to new path " << new_data.string());
+            /*Remove old data*/
+            boost::filesystem::remove_all(old_data);
+		  }
+		}
+		// folder might not be a directory, etc, etc
+		catch (...) { }	
+	  }
+      else
+	  {
+        MWARNING("New blockchain data in " << new_data.string() << " already exists, ignore old blockchain data");
+      } 
+	}
     // check for blockchain.bin
     try
     {

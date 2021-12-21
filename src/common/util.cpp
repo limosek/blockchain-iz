@@ -409,14 +409,15 @@ std::string get_nix_version_display_string()
     /* Please for the love of god refactor  the ifdefs out of this */
 
     // namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\CRYPTONOTE_NAME
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\CRYPTONOTE_NAME
-    // Mac: ~/Library/Application Support/CRYPTONOTE_NAME
-    // Unix: ~/.CRYPTONOTE_NAME
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\CRYPTONOTE_NAME\data
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\CRYPTONOTE_NAME\data
+	// Windows >= Windows 7: C:\ProgramData\CRYPTONOTE_NAME\data
+    // Mac: ~/Library/Application Support/CRYPTONOTE_NAME/data
+    // Unix: ~/CRYPTONOTE_NAME/data
     std::string config_folder;
 
 #ifdef WIN32
-    config_folder = get_special_folder_path(CSIDL_COMMON_APPDATA, true) + "\\" + CRYPTONOTE_NAME;
+    config_folder = get_special_folder_path(CSIDL_COMMON_APPDATA, true) + "\\" + CRYPTONOTE_NAME + "\\" + CRYPTONOTE_BLOCKCHAINDATA_FOLDERNAME;
 #else
     std::string pathRet;
     char* pszHome = getenv("HOME");
@@ -427,14 +428,81 @@ std::string get_nix_version_display_string()
 #ifdef MAC_OSX
     // Mac
     pathRet /= "Library/Application Support";
-    config_folder =  (pathRet + "/" + CRYPTONOTE_NAME);
+    config_folder =  (pathRet + "/" + CRYPTONOTE_NAME + "/" + CRYPTONOTE_BLOCKCHAINDATA_FOLDERNAME);
 #else
     // Unix
-    config_folder = (pathRet + "/." + CRYPTONOTE_NAME);
+    config_folder = (pathRet + "/" + CRYPTONOTE_NAME + "/" + CRYPTONOTE_BLOCKCHAINDATA_FOLDERNAME);
 #endif
 #endif
 
     return config_folder;
+  }
+  
+  std::string get_default_old_data_dir()
+  {
+    /* Please for the love of god refactor  the ifdefs out of this */
+
+    // namespace fs = boost::filesystem;
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\CRYPTONOTE_NAME\data
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\CRYPTONOTE_NAME\data
+	  // Windows >= Windows 7: C:\ProgramData\CRYPTONOTE_NAME\data
+    // Mac: ~/Library/Application Support/CRYPTONOTE_NAME/data
+    // Unix: ~/CRYPTONOTE_NAME/data
+    std::string config_folder;
+
+#ifdef WIN32
+    config_folder = get_special_folder_path(CSIDL_COMMON_APPDATA, true) + "\\" + OLD_CRYPTONOTE_NAME;
+#else
+    std::string pathRet;
+    char* pszHome = getenv("HOME");
+    if (pszHome == NULL || strlen(pszHome) == 0)
+      pathRet = "/";
+    else
+      pathRet = pszHome;
+#ifdef MAC_OSX
+    // Mac
+    pathRet /= "Library/Application Support";
+    config_folder =  (pathRet + "/" + OLD_CRYPTONOTE_NAME);
+#else
+    // Unix
+    config_folder = (pathRet + "/" + OLD_CRYPTONOTE_NAME);
+#endif
+#endif
+
+    return config_folder;
+  }
+
+  bool copyDirectoryRecursively(const boost::filesystem::path& sourceDir, const boost::filesystem::path& destinationDir, bool check)
+  {
+	  namespace fs = boost::filesystem;
+    /* if directory check is needed */
+    if (check)
+    {
+      if (!fs::exists(sourceDir) || !fs::is_directory(sourceDir))
+      {
+        LOG_PRINT_L0("Source directory " << sourceDir.string() << " does not exist or is not a directory");
+        return false;
+      }
+      if (fs::exists(destinationDir))
+      {
+        LOG_PRINT_L0("Destination directory " << destinationDir.string() << " already exists, ignore old path");
+        return false;
+      }
+      if (!fs::create_directory(destinationDir))
+      {
+        LOG_PRINT_L0("Cannot create destination directory " << destinationDir.string());
+        return false;
+      }
+    }
+
+    for (const auto& dirEnt : fs::recursive_directory_iterator{sourceDir})
+    {
+        const auto& path = dirEnt.path();
+        auto relativePathStr = path.string();
+        boost::replace_first(relativePathStr, sourceDir.string(), "");
+        fs::copy(path, destinationDir / relativePathStr);
+    }
+    return true;
   }
 
   bool create_directories_if_necessary(const std::string& path)

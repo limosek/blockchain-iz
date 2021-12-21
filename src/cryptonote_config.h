@@ -135,7 +135,9 @@
 
 #define ALLOW_DEBUG_COMMANDS
 
-#define CRYPTONOTE_NAME                         "intensecoin"
+#define CRYPTONOTE_NAME                         "Lethean"
+#define OLD_CRYPTONOTE_NAME                     "intensecoin" // obsolete: added for migration
+#define CRYPTONOTE_BLOCKCHAINDATA_FOLDERNAME    "data"
 #define CRYPTONOTE_POOLDATA_FILENAME            "poolstate.bin"
 #define CRYPTONOTE_BLOCKCHAINDATA_FILENAME      "data.mdb"
 #define CRYPTONOTE_BLOCKCHAINDATA_LOCK_FILENAME "lock.mdb"

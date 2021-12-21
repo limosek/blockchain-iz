@@ -1,6 +1,7 @@
-FROM ubuntu:16.04
+FROM ubuntu:16.04 as build
 
-ENV SRC_DIR /usr/local/src/lethean
+
+ARG RELEASE_TYPE=release-static
 
 RUN set -x \
   && buildDeps=' \
@@ -16,17 +17,19 @@ RUN set -x \
   && apt-get -qq update \
   && apt-get -qq --no-install-recommends install $buildDeps
 
-RUN git clone https://github.com/LetheanMovement/intensecoin.git $SRC_DIR
-WORKDIR $SRC_DIR
-RUN git checkout xmr
-# checkout is temporary until master is also xmr source
-RUN make -j$(nproc) release-static
+RUN git clone https://github.com/letheanVPN/blockchain.git /usr/local/src/lethean
+WORKDIR /usr/local/src/lethean
 
-RUN cp build/release/bin/* /usr/local/bin/ \
-  \
-  && rm -r $SRC_DIR \
-  && apt-get -qq --auto-remove purge $buildDeps
+RUN make -j$(nproc) ${RELEASE_TYPE}
 
+FROM scratch as build-result
+COPY --from=build /usr/local/src/lethean/build/release/bin/ /
+
+FROM debian:bullseye-slim as container
+
+RUN apt-get install -v ca-certificates
+
+COPY --from=build-result --chmod=0777 / /usr/local/bin
 # Contains the blockchain
 VOLUME /root/.lethean
 

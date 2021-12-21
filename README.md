@@ -11,8 +11,10 @@
 - Links: [LICENSE](LICENSE), [CONTRIBUTING](CONTRIBUTING.md), [Vulnerability Response Process](VULNERABILITY_RESPONSE_PROCESS.md)
 - Compile: [BUILD.md](BUILD.md)
 
+
 LTHN Cryptocurrency was founded from the CryptoNote project in July 2017, To enable Confidential payments using
 CryptoNote distributed ledger technology, this ensures that users remain anonymous by default, Confidential by choice.
+
 
 Privacy is about controlling who sees your data, not hiding it. All transactions receive a view key that may be shared to allow others to decode your TX.
 
@@ -21,14 +23,15 @@ cryptocurrency ecosystem effortlessly, keeping transactional and operational dat
 
 **We welcome improvements, Anyone is welcome to contribute to Lethean's codebase!**
 
+
 If you have a fix or code change, feel free to submit it as a pull request directly to the "main" branch.
+
 
 ## Lethean software updates and consensus protocol changes (hard fork schedule)
 
 Lethean uses a fixed-schedule hard fork mechanism to implement new features. This means that users of Lethean (end users and service providers) need to run current versions and update their software on a regular schedule.
 
 **The last hard fork was on March 9, 2019. Version 3.1.0 (Congo) or later of the software is required to be compliant with the latest hard fork!**
-
 
 ## Sponsors
 Docker              |  GitLab
