@@ -27,6 +27,18 @@ cryptocurrency ecosystem effortlessly, keeping transactional and operational dat
 
 If you have a fix or code change, feel free to submit it as a pull request directly to the "main" branch.
 
+## Projects We Sponsor
+
+Wails.io              |  MkDocs Material
+:-------------------------:|:-------------------------:        
+ <img src="https://raw.githubusercontent.com/wailsapp/wails/master/logo.png" width="50%"> |  ![MkDocs Material](https://raw.githubusercontent.com/squidfunk/mkdocs-material/master/.github/assets/logo.svg)
+https://wails.io/ | https://squidfunk.github.io/mkdocs-material/
+
+
+
+
+
+
 ## Sponsors
 Docker              |  GitLab
 :-------------------------:|:-------------------------:
