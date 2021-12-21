@@ -31,8 +31,8 @@ If you have a fix or code change, feel free to submit it as a pull request direc
 
 Wails.io              |  MkDocs Material
 :-------------------------:|:-------------------------:        
- <img src="https://raw.githubusercontent.com/wailsapp/wails/master/logo.png" width="50%"> |  ![MkDocs Material](https://raw.githubusercontent.com/squidfunk/mkdocs-material/master/.github/assets/logo.svg)
-https://wails.io/ | https://squidfunk.github.io/mkdocs-material/
+ [ <img src="https://raw.githubusercontent.com/wailsapp/wails/master/logo.png" width="250px">](https://wails.io)  | [ ![MkDocs Material](https://raw.githubusercontent.com/squidfunk/mkdocs-material/master/.github/assets/logo.svg)](https://squidfunk.github.io/mkdocs-material/)
+
 
 
 
