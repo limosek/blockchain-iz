@@ -48,7 +48,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: linux-bin
-        path: ${{ github.workspace }}/build/release/bin
+        path: ${{ github.workspace }}/build/bin
 
   source-archive:
     runs-on: ubuntu-20.04
