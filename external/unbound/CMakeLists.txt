@@ -208,12 +208,20 @@ if (MINGW)
   find_library(win32pthread
     NAMES libwinpthread-1.dll)
 
+  find_library(std_lib_dll
+    NAMES libstdc++-6.dll)
+
   if (NOT win32pthread)
     message(STATUS "libwinpthread not found, setting manualy")
     set(win32pthread "${MSYS2_FOLDER}/mingw64/bin/libwinpthread-1.dll")
   endif()
 
-  foreach (input IN LISTS win32pthread)
+  if (NOT std_lib_dll)
+    message(STATUS "libstdc++ not found, setting manualy")
+    set(std_lib_dll "${MSYS2_FOLDER}/mingw64/bin/libstdc++-6.dll")
+  endif()
+
+  foreach (input IN LISTS win32pthread std_lib_dll)
     # Copy shared libraries into the build tree so that no PATH manipulation is
     # necessary.
     get_filename_component(name "${input}" NAME)
