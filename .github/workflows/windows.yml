@@ -35,6 +35,11 @@ jobs:
         ${{env.CCACHE_SETTINGS}}
         make release-static-win64-boost
         make release-static-win64 -j2
+    - uses: actions/upload-artifact@v2
+      with:
+        name: windows-bin
+        path: ${{ github.workspace }}/build/release/bin
+
 
 
   source-archive:
