@@ -92,6 +92,13 @@ release-static-linux-x86_64:
 	mkdir -p build/release
 	cd build/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x64" ../.. && $(MAKE)
 
+release-static-linux-x86_64-boost:
+	cd boost && ./bootstrap.sh && ./b2 --prefix=$(shell pwd)/deps --layout=system address-model=64 runtime-link=static link=static variant=release threading=multi --with-system --with-filesystem --with-thread --with-date_time --with-chrono --with-regex --with-serialization --with-program_options --with-atomic --with-locale install
+
+release-static-linux-x86_64-local-boost: release-static-linux-x86_64-boost
+	mkdir -p build/release
+	cd build/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D Boost_NO_SYSTEM_PATHS=TRUE -D BOOST_ROOT=$(shell pwd)/deps -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x64" ../.. && $(MAKE)
+
 release-static-freebsd-x86_64:
 	mkdir -p build/release
 	cd build/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="freebsd-x64" ../.. && $(MAKE)
@@ -124,6 +131,7 @@ clean:
         read -r -p "This will destroy the build directory, continue (y/N)?: " CONTINUE; \
 	[ $$CONTINUE = "y" ] || [ $$CONTINUE = "Y" ] || (echo "Exiting."; exit 1;)
 	rm -rf build/*
+	rm -rf deps/
 
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
