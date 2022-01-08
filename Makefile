@@ -97,7 +97,7 @@ release-static-linux-x86_64-boost:
 
 release-static-linux-x86_64-local-boost: release-static-linux-x86_64-boost
 	mkdir -p build/release
-	cd build/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D Boost_NO_SYSTEM_PATHS=TRUE -D BOOST_ROOT=$(shell pwd)/deps -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x64" ../.. && $(MAKE)
+	cd build/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D Boost_NO_SYSTEM_PATHS=TRUE -D BOOST_ROOT=$(shell pwd)/deps -D CMAKE_BUILD_TYPE=release -D Boost_NO_BOOST_CMAKE=ON -D BUILD_TAG="linux-x64" ../.. && $(MAKE)
 
 release-static-freebsd-x86_64:
 	mkdir -p build/release
