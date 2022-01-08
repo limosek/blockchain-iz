@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="letheand" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="LetheanVPN" TARGET_NAME="daemon" CONFIG_NAME="MacOS" RUN_TARGET_PROJECT_NAME="LetheanVPN" RUN_TARGET_NAME="daemon">
+  <configuration default="false" name="letheand" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Project" TARGET_NAME="daemon" CONFIG_NAME="MacOS" RUN_TARGET_PROJECT_NAME="Project" RUN_TARGET_NAME="daemon">
     <method v="2">
       <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
     </method>
