@@ -1,23 +1,13 @@
 FROM ubuntu:16.04 as build
 
+#ARG BRANCH=release-3.1
+ARG BRANCH=main
+ARG RELEASE_TYPE=release-static-linux-x86_64
 
-ARG RELEASE_TYPE=release-static
+RUN apt-get -qq update \
+  && apt-get -qq --no-install-recommends install ca-certificates libboost-all-dev cmake g++ git libssl-dev make pkg-config libunbound-dev
 
-RUN set -x \
-  && buildDeps=' \
-      ca-certificates \
-      cmake \
-      g++ \
-      git \
-      libboost1.58-all-dev \
-      libssl-dev \
-      make \
-      pkg-config \
-  ' \
-  && apt-get -qq update \
-  && apt-get -qq --no-install-recommends install $buildDeps
-
-RUN git clone https://github.com/letheanVPN/blockchain.git /usr/local/src/lethean
+RUN git clone --depth=1 --branch ${BRANCH} https://github.com/letheanVPN/blockchain.git /usr/local/src/lethean
 WORKDIR /usr/local/src/lethean
 
 RUN make -j$(nproc) ${RELEASE_TYPE}
@@ -31,7 +21,7 @@ RUN apt-get install -v ca-certificates
 
 COPY --from=build-result --chmod=0777 / /usr/local/bin
 # Contains the blockchain
-VOLUME /root/.lethean
+VOLUME /root/Lethean/data
 
 # Generate your wallet via accessing the container and run:
 # cd /wallet
@@ -47,4 +37,4 @@ ENV RPC_BIND_PORT 48782
 EXPOSE 48782
 EXPOSE 48772
 
-CMD letheand --log-level=$LOG_LEVEL --p2p-bind-ip=$P2P_BIND_IP --p2p-bind-port=$P2P_BIND_PORT --rpc-bind-ip=$RPC_BIND_IP --rpc-bind-port=$RPC_BIND_PORT
+CMD letheand --data-dir=/root/Lethean/data --log-level=$LOG_LEVEL --p2p-bind-ip=$P2P_BIND_IP --p2p-bind-port=$P2P_BIND_PORT --rpc-bind-ip=$RPC_BIND_IP --rpc-bind-port=$RPC_BIND_PORT
