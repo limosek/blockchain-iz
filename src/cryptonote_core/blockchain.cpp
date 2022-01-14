@@ -3537,7 +3537,8 @@ bool Blockchain::update_next_cumulative_size_limit()
 	if (get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_3 ||
 		get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_4 ||
 		get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_5 ||
-    get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_6)
+    	get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_6 ||
+    	get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_7)
 	{
 		//support LTHN max cumulative size limit change since 65k: large blocks every 5 blocks only
 		//transaction size is also checked here.

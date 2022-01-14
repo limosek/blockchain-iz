@@ -832,6 +832,7 @@ namespace cryptonote
 	// From BLOCK_MAJOR_VERSION_7 use Argon2 Chukwa v2
 	if (b.major_version == BLOCK_MAJOR_VERSION_7){
 		crypto::chukwa_slow_hash_v2(bd.data(), bd.size(), res);
+		return true;
 	}else{
 		// PoW variant 1 appeared in block version 4, so our current PoW variant is calculated with "block version - 3"
 		// variant 3 was skipped due to Monero adopting bulletproof txs in that variant without POW changes
