@@ -106,6 +106,8 @@ local.properties
 # TeXlipse plugin
 .texlipse
 .idea/
+!.idea/cmake.xml
+!.idea/blockchain.iml
 
 /testnet
 
