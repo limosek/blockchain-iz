@@ -74,6 +74,13 @@ extern "C" {
     return cn_slow_hash(p->data, p->length, hash, 4/*variant*/, 0/*prehashed*/, p->height);
   }
 }
+
+static void argon2chukwav2_hash(const void *data, size_t length, char *hash) {
+  chash h = chash();
+  chukwa_slow_hash_v2(data, length, h);
+  memcpy(hash, &h, sizeof(chash));
+}
+
 POP_WARNINGS
 
 extern "C" typedef void hash_f(const void *, size_t, char *);
@@ -83,7 +90,8 @@ struct hash_func {
 } hashes[] = {{"fast", cn_fast_hash}, {"slow", cn_slow_hash_0}, {"tree", hash_tree},
   {"extra-blake", hash_extra_blake}, {"extra-groestl", hash_extra_groestl},
   {"extra-jh", hash_extra_jh}, {"extra-skein", hash_extra_skein},
-  {"slow-1", cn_slow_hash_1}, {"slow-2", cn_slow_hash_2}, {"slow-4", cn_slow_hash_4}};
+  {"slow-1", cn_slow_hash_1}, {"slow-2", cn_slow_hash_2}, {"slow-4", cn_slow_hash_4},
+  {"argon2chukwav2", argon2chukwav2_hash}};
 
 int test_variant2_int_sqrt();
 int test_variant2_int_sqrt_ref();

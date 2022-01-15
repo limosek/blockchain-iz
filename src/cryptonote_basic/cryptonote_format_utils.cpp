@@ -827,12 +827,19 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool get_block_longhash(const block& b, crypto::hash& res, uint64_t height)
   {
-    blobdata bd = get_block_hashing_blob(b);
-    // PoW variant 1 appeared in block version 4, so our current PoW variant is calculated with "block version - 3"
-    // variant 3 was skipped due to Monero adopting bulletproof txs in that variant without POW changes
-    const int cn_variant = b.major_version >= BLOCK_MAJOR_VERSION_4 ? (b.major_version >= BLOCK_MAJOR_VERSION_6 ? b.major_version - 2 : b.major_version - 3 ) : 0;
-    crypto::cn_slow_hash(bd.data(), bd.size(), res, cn_variant, height);
-    return true;
+	blobdata bd = get_block_hashing_blob(b);
+
+	// From BLOCK_MAJOR_VERSION_7 use Argon2 Chukwa v2
+	if (b.major_version == BLOCK_MAJOR_VERSION_7){
+		crypto::chukwa_slow_hash_v2(bd.data(), bd.size(), res);
+		return true;
+	}else{
+		// PoW variant 1 appeared in block version 4, so our current PoW variant is calculated with "block version - 3"
+		// variant 3 was skipped due to Monero adopting bulletproof txs in that variant without POW changes
+		const int cn_variant = b.major_version >= BLOCK_MAJOR_VERSION_4 ? (b.major_version >= BLOCK_MAJOR_VERSION_6 ? b.major_version - 2 : b.major_version - 3 ) : 0;
+		crypto::cn_slow_hash(bd.data(), bd.size(), res, cn_variant, height);
+		return true;
+	}
   }
   //---------------------------------------------------------------
   bool get_bytecoin_block_longhash(const block& b, crypto::hash& res)

@@ -366,6 +366,9 @@ link_directories(${UNBOUND_LIBRARY_DIRS})
 include_directories(${EASYLOGGING_INCLUDE})
 link_directories(${EASYLOGGING_LIBRARY_DIRS})
 
+# Setup for argon2
+include_directories(${ARGON2_INCLUDE})
+
 # Final setup for liblmdb
 include_directories(${LMDB_INCLUDE})
 
@@ -446,6 +449,12 @@ else()
   if(COVERAGE)
     message(STATUS "Building with profiling for test coverage report")
     set(COVERAGE_FLAGS "-fprofile-arcs -ftest-coverage --coverage")
+  endif()
+
+  # Could be used for easier local testing, for now just use it always
+  set(USE_TINY_TESTNET TRUE)
+  if(USE_TINY_TESTNET)
+	  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_TINY_TESTNET=1")
   endif()
 
   # With GCC 6.1.1 the compiled binary malfunctions due to aliasing. Until that
