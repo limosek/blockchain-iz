@@ -451,6 +451,12 @@ else()
     set(COVERAGE_FLAGS "-fprofile-arcs -ftest-coverage --coverage")
   endif()
 
+  # Could be used for easier local testing, for now just use it always
+  set(USE_TINY_TESTNET TRUE)
+  if(USE_TINY_TESTNET)
+	  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_TINY_TESTNET=1")
+  endif()
+
   # With GCC 6.1.1 the compiled binary malfunctions due to aliasing. Until that
   # is fixed in the code (Issue #847), force compiler to be conservative.
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing")
