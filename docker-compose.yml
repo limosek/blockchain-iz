@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  testnet:
+    image: lthn/chain:testnet
+    volumes:
+      - testnetVolume01:/root
+volumes:
+  testnetVolume01: {}
+
