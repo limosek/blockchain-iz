@@ -3693,8 +3693,13 @@ void Blockchain::block_longhash_worker(uint64_t height, const epee::span<const b
        break;
     crypto::hash id = get_block_hash(block);
 	crypto::hash pow = null_hash;
-	if (get_hard_fork_version(height + 1) == BLOCK_MAJOR_VERSION_1 ||
-		get_hard_fork_version(height + 1) >= BLOCK_MAJOR_VERSION_4) {
+	/* 
+	 * Check major version based on data in block,
+	 * height correctness is checked afterwards in
+	 * Blockchain::handle_block_to_main_chain
+	 * */
+	if (block.major_version == BLOCK_MAJOR_VERSION_1 ||
+		block.major_version >= BLOCK_MAJOR_VERSION_4) {
    pow = get_block_longhash(block, height++);
 		map.emplace(id, pow);
 	}
