@@ -118,7 +118,7 @@ static const struct {
   { 4, 301, 0, 1518118888 },
   { 5, 401, 0, 1539941268 },
   { 6, 501, 0, 1551264860 },
-  { 7, 901, 0, 1551264860 }
+  { 7, 901, 0, 1551264860 + 1000 } // Give it some time offset
 };
 static const uint64_t testnet_hard_fork_version_1_till = 100;
 
