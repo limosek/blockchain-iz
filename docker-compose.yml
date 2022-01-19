@@ -3,7 +3,7 @@ services:
   testnet:
     image: lthn/chain:testnet
     volumes:
-      - testnetVolume01:/root
+      - ~/Lethean/data:/root
 volumes:
   testnetVolume01: {}
 
