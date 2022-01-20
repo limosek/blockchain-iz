@@ -366,6 +366,9 @@ link_directories(${UNBOUND_LIBRARY_DIRS})
 include_directories(${EASYLOGGING_INCLUDE})
 link_directories(${EASYLOGGING_LIBRARY_DIRS})
 
+# Setup for argon2
+include_directories(${ARGON2_INCLUDE})
+
 # Final setup for liblmdb
 include_directories(${LMDB_INCLUDE})
 

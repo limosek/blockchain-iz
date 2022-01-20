@@ -100,3 +100,6 @@ endif()
 
 add_subdirectory(db_drivers)
 add_subdirectory(easylogging++)
+
+add_subdirectory(argon2)
+set(ARGON2_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/argon2/include" PARENT_SCOPE)

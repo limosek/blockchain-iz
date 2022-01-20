@@ -101,7 +101,8 @@ static const struct {
   // version 5
   { 5, 296287, 0, 1540279084 },
   // version 6
-  { 6, 391500, 0, 1552132800 }
+  { 6, 391500, 0, 1552132800 },
+  { 7, 1147126, 0, 1644148989 }	
 };
 static const uint64_t mainnet_hard_fork_version_1_till = 50000;
 
@@ -116,8 +117,9 @@ static const struct {
   { 2, 101, 0, 1518115575 },
   { 3, 201, 0, 1518117468 },
   { 4, 301, 0, 1518118888 },
-  { 5, 310, 0, 1539941268 },
-  { 6, 801, 0, 1551264860 }
+  { 5, 401, 0, 1539941268 },
+  { 6, 501, 0, 1551264860 },
+  { 7, 901, 0, 1551264860 + 1000 } // Give it some time offset
 };
 static const uint64_t testnet_hard_fork_version_1_till = 100;
 
@@ -3537,7 +3539,8 @@ bool Blockchain::update_next_cumulative_size_limit()
 	if (get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_3 ||
 		get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_4 ||
 		get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_5 ||
-    get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_6)
+    	get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_6 ||
+    	get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_7)
 	{
 		//support LTHN max cumulative size limit change since 65k: large blocks every 5 blocks only
 		//transaction size is also checked here.
@@ -3691,8 +3694,13 @@ void Blockchain::block_longhash_worker(uint64_t height, const epee::span<const b
        break;
     crypto::hash id = get_block_hash(block);
 	crypto::hash pow = null_hash;
-	if (get_hard_fork_version(height + 1) == BLOCK_MAJOR_VERSION_1 ||
-		get_hard_fork_version(height + 1) >= BLOCK_MAJOR_VERSION_4) {
+	/* 
+	 * Check major version based on data in block,
+	 * height correctness is checked afterwards in
+	 * Blockchain::handle_block_to_main_chain
+	 * */
+	if (block.major_version == BLOCK_MAJOR_VERSION_1 ||
+		block.major_version >= BLOCK_MAJOR_VERSION_4) {
    pow = get_block_longhash(block, height++);
 		map.emplace(id, pow);
 	}
