@@ -101,7 +101,8 @@ static const struct {
   // version 5
   { 5, 296287, 0, 1540279084 },
   // version 6
-  { 6, 391500, 0, 1552132800 }
+  { 6, 391500, 0, 1552132800 },
+  { 7, 1147126, 0, 1644148989 }	
 };
 static const uint64_t mainnet_hard_fork_version_1_till = 50000;
 
