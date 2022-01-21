@@ -500,7 +500,7 @@ std::string get_nix_version_display_string()
         const auto& path = dirEnt.path();
         auto relativePathStr = path.string();
         boost::replace_first(relativePathStr, sourceDir.string(), "");
-        fs::copy(path, destinationDir / relativePathStr);
+        fs::rename(path, destinationDir / relativePathStr);
     }
     return true;
   }
