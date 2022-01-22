@@ -134,6 +134,13 @@ fuzz:
 
 clean:
 	@echo "WARNING: Back-up your wallet if it exists within ./build!" ; \
+        read -r -p "This will destroy the v$(LETHEAN_VERSION) build directory, continue (y/N)?: " CONTINUE; \
+	[ $$CONTINUE = "y" ] || [ $$CONTINUE = "Y" ] || (echo "Exiting."; exit 1;)
+	rm -rf build/$(LETHEAN_VERSION)
+	rm -rf deps/
+
+clean-all:
+	@echo "WARNING: Back-up your wallet if it exists within ./build!" ; \
         read -r -p "This will destroy the build directory, continue (y/N)?: " CONTINUE; \
 	[ $$CONTINUE = "y" ] || [ $$CONTINUE = "Y" ] || (echo "Exiting."; exit 1;)
 	rm -rf build/*
