@@ -26,101 +26,104 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# Provide current version here instead of versin.h.in file
+LETHEAN_VERSION?=4.0.0
+
 all: release-all
 
 cmake-debug:
-	mkdir -p build/debug
-	cd build/debug && cmake -D CMAKE_BUILD_TYPE=Debug ../..
+	mkdir -p build/$(LETHEAN_VERSION)/debug
+	cd build/$(LETHEAN_VERSION)/debug && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D CMAKE_BUILD_TYPE=Debug ../../..
 
 debug: cmake-debug
-	cd build/debug && $(MAKE)
+	cd build/$(LETHEAN_VERSION)/debug && $(MAKE)
 
 debug-test:
-	mkdir -p build/debug
-	cd build/debug && cmake -D BUILD_TESTS=ON -D CMAKE_BUILD_TYPE=Debug ../.. && $(MAKE) && $(MAKE) test
+	mkdir -p build/$(LETHEAN_VERSION)/debug
+	cd build/$(LETHEAN_VERSION)/debug && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=ON -D CMAKE_BUILD_TYPE=Debug ../../.. && $(MAKE) && $(MAKE) test
 
 debug-all:
-	mkdir -p build/debug
-	cd build/debug && cmake -D BUILD_TESTS=ON -D BUILD_SHARED_LIBS=OFF -D CMAKE_BUILD_TYPE=Debug ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/debug
+	cd build/$(LETHEAN_VERSION)/debug && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=ON -D BUILD_SHARED_LIBS=OFF -D CMAKE_BUILD_TYPE=Debug ../../.. && $(MAKE)
 
 debug-static-all:
-	mkdir -p build/debug
-	cd build/debug && cmake -D BUILD_TESTS=ON -D STATIC=ON -D CMAKE_BUILD_TYPE=Debug ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/debug
+	cd build/$(LETHEAN_VERSION)/debug && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=ON -D STATIC=ON -D CMAKE_BUILD_TYPE=Debug ../../.. && $(MAKE)
 
 cmake-release:
-	mkdir -p build/release
-	cd build/release && cmake -D CMAKE_BUILD_TYPE=Release ../..
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D CMAKE_BUILD_TYPE=Release ../../..
 
 release: cmake-release
-	cd build/release && $(MAKE)
+	cd build/$(LETHEAN_VERSION)/release && $(MAKE)
 
 release-test:
-	mkdir -p build/release
-	cd build/release && cmake -D BUILD_TESTS=ON -D CMAKE_BUILD_TYPE=release ../.. && $(MAKE) && $(MAKE) test
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=ON -D CMAKE_BUILD_TYPE=release ../../.. && $(MAKE) && $(MAKE) test
 
 release-all:
-	mkdir -p build/release
-	cd build/release && cmake -D BUILD_TESTS=ON -D CMAKE_BUILD_TYPE=release ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=ON -D CMAKE_BUILD_TYPE=release ../../.. && $(MAKE)
 
 release-static:
-	mkdir -p build/release
-	cd build/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release ../../.. && $(MAKE)
 
 coverage:
-	mkdir -p build/debug
-	cd build/debug && cmake -D BUILD_TESTS=ON -D CMAKE_BUILD_TYPE=Debug -D COVERAGE=ON ../.. && $(MAKE) && $(MAKE) test
+	mkdir -p build/$(LETHEAN_VERSION)/debug
+	cd build/$(LETHEAN_VERSION)/debug && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=ON -D CMAKE_BUILD_TYPE=Debug -D COVERAGE=ON ../../.. && $(MAKE) && $(MAKE) test
 
 # Targets for specific prebuilt builds which will be advertised for updates by their build tag
 
 release-static-linux-armv6:
-	mkdir -p build/release
-	cd build/release && cmake -D BUILD_TESTS=OFF -D ARCH="armv6zk" -D STATIC=ON -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-armv6" ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=OFF -D ARCH="armv6zk" -D STATIC=ON -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-armv6" ../../.. && $(MAKE)
 
 release-static-linux-armv7:
-	mkdir -p build/release
-	cd build/release && cmake -D BUILD_TESTS=OFF -D ARCH="armv7-a" -D STATIC=ON -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-armv7" ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=OFF -D ARCH="armv7-a" -D STATIC=ON -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-armv7" ../../.. && $(MAKE)
 
 release-static-android:
-	mkdir -p build/release
-	cd build/release && cmake -D BUILD_TESTS=OFF -D ARCH="armv7-a" -D STATIC=ON -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D ANDROID=true -D INSTALL_VENDORED_LIBUNBOUND=ON -D BUILD_TAG="android" ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=OFF -D ARCH="armv7-a" -D STATIC=ON -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D ANDROID=true -D INSTALL_VENDORED_LIBUNBOUND=ON -D BUILD_TAG="android" ../../.. && $(MAKE)
 
 release-static-linux-armv8:
-	mkdir -p build/release
-	cd build/release && cmake -D BUILD_TESTS=OFF -D ARCH="armv8-a" -D STATIC=ON -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-armv8" ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=OFF -D ARCH="armv8-a" -D STATIC=ON -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-armv8" ../../.. && $(MAKE)
 
 release-static-linux-x86_64:
-	mkdir -p build/release
-	cd build/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x64" ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x64" ../../.. && $(MAKE)
 
 release-static-linux-x86_64-boost:
 	cd boost && ./bootstrap.sh && ./b2 --prefix=$(shell pwd)/deps --layout=system address-model=64 runtime-link=static link=static variant=release threading=multi --with-system --with-filesystem --with-thread --with-date_time --with-chrono --with-regex --with-serialization --with-program_options --with-atomic --with-locale install
 
 release-static-linux-x86_64-local-boost: release-static-linux-x86_64-boost
-	mkdir -p build/release
-	cd build/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D Boost_NO_SYSTEM_PATHS=TRUE -D BOOST_ROOT=$(shell pwd)/deps -D CMAKE_BUILD_TYPE=release -D Boost_NO_BOOST_CMAKE=ON -D BUILD_TAG="linux-x64" ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D Boost_NO_SYSTEM_PATHS=TRUE -D BOOST_ROOT=$(shell pwd)/deps -D CMAKE_BUILD_TYPE=release -D Boost_NO_BOOST_CMAKE=ON -D BUILD_TAG="linux-x64" ../../.. && $(MAKE)
 
 release-static-freebsd-x86_64:
-	mkdir -p build/release
-	cd build/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="freebsd-x64" ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="freebsd-x64" ../../.. && $(MAKE)
 
 release-static-mac-x86_64:
-	mkdir -p build/release
-	cd build/release && cmake -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="mac-x64" ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="mac-x64" ../../.. && $(MAKE)
 
 release-static-linux-i686:
-	mkdir -p build/release
-	cd build/release && cmake -D STATIC=ON -D ARCH="i686" -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x86" ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION)  -D STATIC=ON -D ARCH="i686" -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x86" ../../.. && $(MAKE)
 
 release-static-win64:
-	mkdir -p build/release
-	cd build/release && cmake -G "MSYS Makefiles" -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TAG="win-x64" -D CMAKE_TOOLCHAIN_FILE=../../cmake/64-bit-toolchain.cmake -D MSYS2_FOLDER=$(shell cd ${MINGW_PREFIX}/.. && pwd -W) ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -G "MSYS Makefiles" -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TAG="win-x64" -D CMAKE_TOOLCHAIN_FILE=../../../cmake/64-bit-toolchain.cmake -D MSYS2_FOLDER=$(shell cd ${MINGW_PREFIX}/.. && pwd -W) ../../.. && $(MAKE)
 
 release-static-win64-boost:
 	cd boost && ./bootstrap.sh && ./b2 --prefix=$(shell cd ${MINGW_PREFIX} && pwd -W) --layout=system address-model=64 runtime-link=static link=static variant=release threading=multi --with-system --with-filesystem --with-thread --with-date_time --with-chrono --with-regex --with-serialization --with-program_options --with-atomic --with-locale install
 
 release-static-win32:
-	mkdir -p build/release
-	cd build/release && cmake -G "MSYS Makefiles" -D STATIC=ON -D ARCH="i686" -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=Release -D BUILD_TAG="win-x32" -D CMAKE_TOOLCHAIN_FILE=../../cmake/32-bit-toolchain.cmake -D MSYS2_FOLDER=$(shell cd ${MINGW_PREFIX}/.. && pwd -W) ../.. && $(MAKE)
+	mkdir -p build/$(LETHEAN_VERSION)/release
+	cd build/$(LETHEAN_VERSION)/release && cmake -G "MSYS Makefiles" -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="i686" -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=Release -D BUILD_TAG="win-x32" -D CMAKE_TOOLCHAIN_FILE=../../../cmake/32-bit-toolchain.cmake -D MSYS2_FOLDER=$(shell cd ${MINGW_PREFIX}/.. && pwd -W) ../../.. && $(MAKE)
 
 docker-testnet:
 	docker run -it lthn/chain:testnet

@@ -490,6 +490,10 @@ else()
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
 
+  # Pass provided version as C def
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DMONERO_VERSION=\\\"${LETHEAN_VERSION}\\\"")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMONERO_VERSION=\\\"${LETHEAN_VERSION}\\\"")
+
   if(ARM)
     message(STATUS "Setting FPU Flags for ARM Processors")
 
