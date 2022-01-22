@@ -101,28 +101,11 @@ static const struct {
   // version 5
   { 5, 296287, 0, 1540279084 },
   // version 6
-  { 6, 391500, 0, 1552132800 }
+  { 6, 391500, 0, 1552132800 },
+  { 7, 1147126, 0, 1644148989 }	
 };
 static const uint64_t mainnet_hard_fork_version_1_till = 50000;
 
-#ifdef USE_TINY_TESTNET
-static const struct {
-  uint8_t version;
-  uint64_t height;
-  uint8_t threshold;
-  time_t time;
-} testnet_hard_forks[] = {
-  // version 1 from the start of the blockchain
-  { 1, 1, 0, config::GENESIS_TIMESTAMP },
-  { 2, 6, 0, config::GENESIS_TIMESTAMP + (3600 * 1)},
-  { 3, 10, 0, config::GENESIS_TIMESTAMP + (3600 * 2)},
-  { 4, 12, 0, config::GENESIS_TIMESTAMP + (3600 * 3)},
-  { 5, 14, 0, config::GENESIS_TIMESTAMP + (3600 * 4)},
-  { 6, 16, 0, config::GENESIS_TIMESTAMP + (3600 * 5)},
-  { 7, 18, 0, config::GENESIS_TIMESTAMP + (3600 * 6)}
-};
-static const uint64_t testnet_hard_fork_version_1_till = 5;
-#else
 static const struct {
   uint8_t version;
   uint64_t height;
@@ -134,11 +117,11 @@ static const struct {
   { 2, 101, 0, 1518115575 },
   { 3, 201, 0, 1518117468 },
   { 4, 301, 0, 1518118888 },
-  { 5, 310, 0, 1539941268 },
-  { 6, 801, 0, 1551264860 }
+  { 5, 401, 0, 1539941268 },
+  { 6, 501, 0, 1551264860 },
+  { 7, 901, 0, 1551264860 + 1000 } // Give it some time offset
 };
 static const uint64_t testnet_hard_fork_version_1_till = 100;
-#endif
 
 //------------------------------------------------------------------
 Blockchain::Blockchain(tx_memory_pool& tx_pool) :
@@ -3711,8 +3694,13 @@ void Blockchain::block_longhash_worker(uint64_t height, const epee::span<const b
        break;
     crypto::hash id = get_block_hash(block);
 	crypto::hash pow = null_hash;
-	if (get_hard_fork_version(height + 1) == BLOCK_MAJOR_VERSION_1 ||
-		get_hard_fork_version(height + 1) >= BLOCK_MAJOR_VERSION_4) {
+	/* 
+	 * Check major version based on data in block,
+	 * height correctness is checked afterwards in
+	 * Blockchain::handle_block_to_main_chain
+	 * */
+	if (block.major_version == BLOCK_MAJOR_VERSION_1 ||
+		block.major_version >= BLOCK_MAJOR_VERSION_4) {
    pow = get_block_longhash(block, height++);
 		map.emplace(id, pow);
 	}

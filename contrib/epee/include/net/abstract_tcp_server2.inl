@@ -55,7 +55,7 @@
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "net"
 
-#define CONNECTION_CLEANUP_TIME 30 // seconds
+//#define CONNECTION_CLEANUP_TIME 30 // seconds
 
 PRAGMA_WARNING_PUSH
 namespace epee
@@ -809,7 +809,7 @@ POP_WARNINGS
     m_threads_count = threads_count;
     m_main_thread_id = boost::this_thread::get_id();
     MLOG_SET_THREAD_NAME("[SRV_MAIN]");
-    add_idle_handler(boost::bind(&boosted_tcp_server::cleanup_connections, this), 5000);
+    //add_idle_handler(boost::bind(&boosted_tcp_server::cleanup_connections, this), 5000);
     while(!m_stop_signal_sent)
     {
 
@@ -899,7 +899,8 @@ POP_WARNINGS
     connections_mutex.lock();
     for (auto &c: connections_)
     {
-      c.second->cancel();
+      //c.second->cancel();
+		c->cancel();
     }
     connections_.clear();
     connections_mutex.unlock();
@@ -907,18 +908,18 @@ POP_WARNINGS
     CATCH_ENTRY_L0("boosted_tcp_server<t_protocol_handler>::send_stop_signal()", void());
   }
   //---------------------------------------------------------------------------------
-  template<class t_protocol_handler>
-  bool boosted_tcp_server<t_protocol_handler>::cleanup_connections()
-  {
-    connections_mutex.lock();
-    boost::system_time cutoff = boost::get_system_time() - boost::posix_time::seconds(CONNECTION_CLEANUP_TIME);
-    while (!connections_.empty() && connections_.front().first < cutoff)
-    {
-      connections_.pop_front();
-    }
-    connections_mutex.unlock();
-    return true;
-  }
+  //template<class t_protocol_handler>
+  //bool boosted_tcp_server<t_protocol_handler>::cleanup_connections()
+  //{
+  //  connections_mutex.lock();
+  //  boost::system_time cutoff = boost::get_system_time() - boost::posix_time::seconds(CONNECTION_CLEANUP_TIME);
+  //  while (!connections_.empty() && connections_.front().first < cutoff)
+  //  {
+  //    connections_.pop_front();
+  //  }
+  //  connections_mutex.unlock();
+  //  return true;
+  //}
   //---------------------------------------------------------------------------------
   template<class t_protocol_handler>
   bool boosted_tcp_server<t_protocol_handler>::is_stop_signal_sent()
@@ -943,6 +944,9 @@ POP_WARNINGS
         boost::bind(&boosted_tcp_server<t_protocol_handler>::handle_accept, this,
         boost::asio::placeholders::error));
 
+		boost::asio::socket_base::keep_alive opt(true);
+		conn->socket().set_option(opt);
+
       conn->start(true, 1 < m_threads_count);
       conn->save_dbg_log();
     }else
@@ -959,9 +963,13 @@ POP_WARNINGS
 
     connection_ptr new_connection_l(new connection<t_protocol_handler>(io_service_, m_config, m_sock_count, m_sock_number, m_pfilter, m_connection_type) );
     connections_mutex.lock();
-    connections_.push_back(std::make_pair(boost::get_system_time(), new_connection_l));
+    //connections_.push_back(std::make_pair(boost::get_system_time(), new_connection_l));
+	connections_.insert(new_connection_l);
     MDEBUG("connections_ size now " << connections_.size());
     connections_mutex.unlock();
+
+	epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ CRITICAL_REGION_LOCAL(connections_mutex); connections_.erase(new_connection_l); });
+
     boost::asio::ip::tcp::socket&  sock_ = new_connection_l->socket();
     
     //////////////////////////////////////////////////////////////////////////
@@ -983,7 +991,7 @@ POP_WARNINGS
     sock_.open(remote_endpoint.protocol());
     if(bind_ip != "0.0.0.0" && bind_ip != "0" && bind_ip != "" )
     {
-      boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::address::from_string(adr.c_str()), 0);
+      boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::address::from_string(bind_ip.c_str()), 0);
       sock_.bind(local_endpoint);
     }
 
@@ -1039,6 +1047,10 @@ POP_WARNINGS
 
     _dbg3("Connected success to " << adr << ':' << port);
 
+	connections_mutex.lock();
+    connections_.erase(new_connection_l);
+    connections_mutex.unlock();
+
     bool r = new_connection_l->start(false, 1 < m_threads_count);
     if (r)
     {
@@ -1063,8 +1075,12 @@ POP_WARNINGS
     TRY_ENTRY();    
     connection_ptr new_connection_l(new connection<t_protocol_handler>(io_service_, m_config, m_sock_count, m_sock_number, m_pfilter, m_connection_type) );
     connections_mutex.lock();
-    connections_.push_back(std::make_pair(boost::get_system_time(), new_connection_l));
+    //connections_.push_back(std::make_pair(boost::get_system_time(), new_connection_l));
+	connections_.insert(new_connection_l);
     MDEBUG("connections_ size now " << connections_.size());
+
+	epee::misc_utils::auto_scope_leave_caller scope_exit_handler = epee::misc_utils::create_scope_leave_handler([&](){ CRITICAL_REGION_LOCAL(connections_mutex); connections_.erase(new_connection_l); });
+
     connections_mutex.unlock();
     boost::asio::ip::tcp::socket&  sock_ = new_connection_l->socket();
     
@@ -1084,7 +1100,7 @@ POP_WARNINGS
     sock_.open(remote_endpoint.protocol());
     if(bind_ip != "0.0.0.0" && bind_ip != "0" && bind_ip != "" )
     {
-      boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::address::from_string(adr.c_str()), 0);
+      boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::address::from_string(bind_ip.c_str()), 0);
       sock_.bind(local_endpoint);
     }
     
@@ -1114,6 +1130,10 @@ POP_WARNINGS
           {
             _dbg3("[sock " << new_connection_l->socket().native_handle() << "] Connected success to " << adr << ':' << port <<
               " from " << lep.address().to_string() << ':' << lep.port());
+			// start adds the connection to the config object's list, so we don't need to have it locally anymore
+            connections_mutex.lock();
+            connections_.erase(new_connection_l);
+            connections_mutex.unlock();
             bool r = new_connection_l->start(false, 1 < m_threads_count);
             if (r)
             {

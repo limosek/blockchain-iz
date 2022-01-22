@@ -38,14 +38,14 @@ ENV TEST_P2P_BIND_PORT 38772
 ENV RPC_BIND_IP 0.0.0.0
 ENV RPC_BIND_PORT 48782
 ENV TEST_RPC_BIND_PORT 38782
-ENV DATA_DIR /root/Lethean/data/chain-live
-ENV TEST_DATA_DIR /root/Lethean/data/chain-test
+ENV DATA_DIR /root/Lethean/data
+ENV TEST_DATA_DIR /root/Lethean/data/testnet
 
 EXPOSE 48782
 EXPOSE 48772
 EXPOSE 38772
 EXPOSE 38782
 
-CMD letheand --testnet --confirm-external-bind --data-dir=$DATA_DIR --testnet-data-dir=$TEST_DATA_DIR --log-level=$LOG_LEVEL \
+CMD letheand --confirm-external-bind --add-exclusive-node="88.99.61.2:38782" --data-dir=$DATA_DIR --testnet-data-dir=$TEST_DATA_DIR --log-level=$LOG_LEVEL \
     --testnet-rpc-bind-port=$TEST_RPC_BIND_PORT --p2p-bind-ip=$P2P_BIND_IP --testnet-p2p-bind-port=$TEST_P2P_BIND_PORT --p2p-bind-port=$P2P_BIND_PORT --rpc-bind-ip=$RPC_BIND_IP --rpc-bind-port=$RPC_BIND_PORT
 

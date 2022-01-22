@@ -34,6 +34,8 @@ endif()
 cmake_minimum_required(VERSION 2.8.7)
 
 project(LetheanVPN)
+# shhhhh sleepy time errors, we know...
+add_definitions(-w)
 
 function (die msg)
   if (NOT WIN32)
@@ -405,7 +407,7 @@ else()
   else()
     set(ARCH_FLAG "-march=${ARCH}")
   endif()
-  set(WARNINGS "-Wall -Wextra -Wpointer-arith -Wundef -Wvla -Wwrite-strings -Wno-error=extra -Wno-error=deprecated-declarations -Wno-unused-parameter -Wno-unused-variable -Wno-error=unused-variable -Wno-error=undef -Wno-error=uninitialized")
+  set(WARNINGS "-Wno-dev -Wno-error -fvisibility=hidden -Wpointer-arith -Wundef -Wvla -Wwrite-strings -Wno-error=deprecated-declarations -Wno-unused-parameter -Wno-unused-variable -Wno-error=unused-variable -Wno-error=undef -Wno-error=uninitialized")
   if(NOT MINGW)
     set(WARNINGS_AS_ERRORS_FLAG "-Werror")
   endif()
@@ -428,8 +430,8 @@ else()
       add_definitions(-DWINVER=0x0501 -D_WIN32_WINNT=0x0501)
     endif()
   endif()
-  set(C_WARNINGS "-Waggregate-return -Wnested-externs -Wold-style-definition -Wstrict-prototypes")
-  set(CXX_WARNINGS "-Wno-reorder -Wno-missing-field-initializers")
+#  set(C_WARNINGS "-Waggregate-return -Wnested-externs -Wold-style-definition -Wstrict-prototypes")
+#  set(CXX_WARNINGS "-Wno-reorder -Wno-missing-field-initializers")
   try_compile(STATIC_ASSERT_RES "${CMAKE_CURRENT_BINARY_DIR}/static-assert" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/test-static-assert.c" COMPILE_DEFINITIONS "-std=c11")
   if(STATIC_ASSERT_RES)
     set(STATIC_ASSERT_FLAG "")
@@ -449,12 +451,6 @@ else()
   if(COVERAGE)
     message(STATUS "Building with profiling for test coverage report")
     set(COVERAGE_FLAGS "-fprofile-arcs -ftest-coverage --coverage")
-  endif()
-
-  # Could be used for easier local testing, for now just use it always
-  set(USE_TINY_TESTNET TRUE)
-  if(USE_TINY_TESTNET)
-	  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_TINY_TESTNET=1")
   endif()
 
   # With GCC 6.1.1 the compiled binary malfunctions due to aliasing. Until that
@@ -720,7 +716,7 @@ endfunction()
 add_subdirectory(contrib)
 add_subdirectory(src)
 
-treat_warnings_as_errors(contrib src)
+#treat_warnings_as_errors(contrib src)
 
 option(BUILD_TESTS "Build tests." OFF)
 
