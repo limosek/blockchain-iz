@@ -433,6 +433,7 @@ namespace nodetool
     {
       memcpy(&m_network_id, &::config::testnet::NETWORK_ID, 16);
       full_addrs = get_seed_nodes(true);
+	  m_fallback_seed_nodes_added = true;
     }
     else
     {
