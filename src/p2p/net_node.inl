@@ -1188,8 +1188,16 @@ namespace nodetool
         if(m_net_server.is_stop_signal_sent())
           return false;
 
-        if(try_to_connect_and_handshake_with_new_peer(m_seed_nodes[current_index], true))
-          break;
+		if(!is_addr_connected(m_seed_nodes[current_index]))
+		{
+			if(try_to_connect_and_handshake_with_new_peer(m_seed_nodes[current_index], true))
+				break;
+		}
+		else
+		{
+			MDEBUG("Seed node " << m_seed_nodes[current_index].str() << " already connected ");
+		}
+
         if(++try_count > m_seed_nodes.size())
         {
           if (!m_fallback_seed_nodes_added)
