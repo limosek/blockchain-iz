@@ -77,11 +77,12 @@ coverage:
 # Targets for specific prebuilt builds which will be advertised for updates by their build tag
 
 ci-release:
+	rm build/$(LETHEAN_VERSION)/packaged/$(LETHEAN_RELEASE).zip || true
 	chmod +x build/$(LETHEAN_VERSION)/release/bin/lethean*
 	mkdir -p build/$(LETHEAN_VERSION)/packaged build/packaged/
 	cp build/$(LETHEAN_VERSION)/release/bin/* build/$(LETHEAN_VERSION)/packaged/
 	cp LICENSE build/$(LETHEAN_VERSION)/packaged/LICENSE
-	cd  build/$(LETHEAN_VERSION)/packaged/ && zip -r ../../packaged/$(LETHEAN_RELEASE).zip *
+	cd  build/$(LETHEAN_VERSION)/packaged/ && zip -r ../../packaged/$(LETHEAN_RELEASE).zip . -i *
 
 
 release-static-linux-armv6:
