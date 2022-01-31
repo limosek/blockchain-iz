@@ -27,7 +27,8 @@
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Provide current version here instead of versin.h.in file
-LETHEAN_VERSION?=4.0.0
+LETHEAN_VERSION?=4.0.1
+LETHEAN_RELEASE?=macOS
 
 all: release-all
 
@@ -74,6 +75,14 @@ coverage:
 	cd build/$(LETHEAN_VERSION)/debug && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=ON -D CMAKE_BUILD_TYPE=Debug -D COVERAGE=ON ../../.. && $(MAKE) && $(MAKE) test
 
 # Targets for specific prebuilt builds which will be advertised for updates by their build tag
+
+ci-release:
+	chmod +x build/$(LETHEAN_VERSION)/release/bin/lethean*
+	mkdir -p build/$(LETHEAN_VERSION)/packaged build/packaged/
+	cp build/$(LETHEAN_VERSION)/release/bin/* build/$(LETHEAN_VERSION)/packaged/
+	cp LICENSE build/$(LETHEAN_VERSION)/packaged/LICENSE
+	cd  build/$(LETHEAN_VERSION)/packaged/ && zip -r ../../packaged/$(LETHEAN_RELEASE).zip *
+
 
 release-static-linux-armv6:
 	mkdir -p build/$(LETHEAN_VERSION)/release
@@ -149,4 +158,4 @@ clean-all:
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
-.PHONY: all cmake-debug debug debug-test debug-all cmake-release release release-test release-all clean tags
+.PHONY: all cmake-debug debug debug-test debug-all cmake-release release release-test release-all clean tags ci-release-mac-x86_64

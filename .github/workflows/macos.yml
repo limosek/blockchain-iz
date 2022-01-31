@@ -43,10 +43,10 @@ jobs:
       run: |
         ${{env.CCACHE_SETTINGS}}
         make release-static-mac-x86_64 -j${HOMEBREW_MAKE_JOBS}
+    - run: LETHEAN_RELEASE=macOS make ci-release
     - uses: actions/upload-artifact@v2
       with:
-        name: macos-bin
-        path: ${{ github.workspace }}/build/release/bin
+        path: ${{ github.workspace }}/build/packaged/
 
 
   source-archive:
