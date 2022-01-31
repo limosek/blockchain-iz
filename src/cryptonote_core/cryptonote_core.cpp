@@ -105,7 +105,7 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::update_checkpoints()
   {
-    if (m_testnet || m_fakechain || m_disable_dns_checkpoints) return true;
+    if (m_fakechain || m_disable_dns_checkpoints) return true;
 
     if (m_checkpoints_updating.test_and_set()) return true;
 
