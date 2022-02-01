@@ -30,7 +30,7 @@
 LETHEAN_VERSION?=4.0.1
 LETHEAN_RELEASE?=macOS
 
-all: release-all
+all: help
 
 cmake-debug:
 	mkdir -p build/$(LETHEAN_VERSION)/debug
@@ -66,7 +66,7 @@ release-all:
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=ON -D CMAKE_BUILD_TYPE=release ../../.. && $(MAKE)
 
-release-static:
+release-static: ## Linux 64 & Boost Compile
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release ../../.. && $(MAKE)
 
@@ -76,32 +76,34 @@ coverage:
 
 # Targets for specific prebuilt builds which will be advertised for updates by their build tag
 
-ci-release:
+ci-release: ## cp & chmod release/bin/lethean*) & LICENCE > build/$LETHEAN_VERSION/packaged/
 	rm build/$(LETHEAN_VERSION)/packaged/$(LETHEAN_RELEASE).zip || true
 	chmod +x build/$(LETHEAN_VERSION)/release/bin/lethean*
 	mkdir -p build/$(LETHEAN_VERSION)/packaged build/packaged/
 	cp build/$(LETHEAN_VERSION)/release/bin/* build/$(LETHEAN_VERSION)/packaged/
 	cp LICENSE build/$(LETHEAN_VERSION)/packaged/LICENSE
+
+zip-release: ## cd into packaged, zip a clean release file for an artifact
 	cd  build/$(LETHEAN_VERSION)/packaged/ && zip -r ../../packaged/$(LETHEAN_RELEASE).zip . -i *
 
 
-release-static-linux-armv6:
+release-static-linux-armv6: ## arch: armv6zk
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=OFF -D ARCH="armv6zk" -D STATIC=ON -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-armv6" ../../.. && $(MAKE)
 
-release-static-linux-armv7:
+release-static-linux-armv7: ## arch: armv7-a
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=OFF -D ARCH="armv7-a" -D STATIC=ON -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-armv7" ../../.. && $(MAKE)
 
-release-static-android:
+release-static-android: ## arch: armv7-a
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=OFF -D ARCH="armv7-a" -D STATIC=ON -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D ANDROID=true -D INSTALL_VENDORED_LIBUNBOUND=ON -D BUILD_TAG="android" ../../.. && $(MAKE)
 
-release-static-linux-armv8:
+release-static-linux-armv8: ## arch: armv8-a
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D BUILD_TESTS=OFF -D ARCH="armv8-a" -D STATIC=ON -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-armv8" ../../.. && $(MAKE)
 
-release-static-linux-x86_64:
+release-static-linux-x86_64: ## Linux 64
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x64" ../../.. && $(MAKE)
 
@@ -112,44 +114,44 @@ release-static-linux-x86_64-local-boost: release-static-linux-x86_64-boost
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D Boost_NO_SYSTEM_PATHS=TRUE -D BOOST_ROOT=$(shell pwd)/deps -D CMAKE_BUILD_TYPE=release -D Boost_NO_BOOST_CMAKE=ON -D BUILD_TAG="linux-x64" ../../.. && $(MAKE)
 
-release-static-freebsd-x86_64:
+release-static-freebsd-x86_64: ## FreeBSD 64
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="freebsd-x64" ../../.. && $(MAKE)
 
-release-static-mac-x86_64:
+release-static-mac-x86_64: ## macOS64-intel
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="mac-x64" ../../.. && $(MAKE)
 
-release-static-linux-i686:
+release-static-linux-i686: ##  Linux32
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION)  -D STATIC=ON -D ARCH="i686" -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x86" ../../.. && $(MAKE)
 
-release-static-win64:
+release-static-win64: ## Windows64
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -G "MSYS Makefiles" -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=Release -D BUILD_TAG="win-x64" -D CMAKE_TOOLCHAIN_FILE=../../../cmake/64-bit-toolchain.cmake -D MSYS2_FOLDER=$(shell cd ${MINGW_PREFIX}/.. && pwd -W) ../../.. && $(MAKE)
 
-release-static-win64-boost:
+release-static-win64-boost: ## Windows64 & Boost Compile
 	cd boost && ./bootstrap.sh && ./b2 --prefix=$(shell cd ${MINGW_PREFIX} && pwd -W) --layout=system address-model=64 runtime-link=static link=static variant=release threading=multi --with-system --with-filesystem --with-thread --with-date_time --with-chrono --with-regex --with-serialization --with-program_options --with-atomic --with-locale install
 
-release-static-win32:
+release-static-win32: ## Windows32
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -G "MSYS Makefiles" -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="i686" -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=Release -D BUILD_TAG="win-x32" -D CMAKE_TOOLCHAIN_FILE=../../../cmake/32-bit-toolchain.cmake -D MSYS2_FOLDER=$(shell cd ${MINGW_PREFIX}/.. && pwd -W) ../../.. && $(MAKE)
 
-docker-testnet:
+docker-testnet: ## Run testnet Docker daemon
 	docker run -it lthn/chain:testnet
 
 fuzz:
 	mkdir -p build/fuzz
 	cd build/fuzz && cmake -D BUILD_TESTS=ON -D USE_LTO=OFF -D CMAKE_C_COMPILER=afl-gcc -D CMAKE_CXX_COMPILER=afl-g++ -D ARCH="x86-64" -D CMAKE_BUILD_TYPE=fuzz -D BUILD_TAG="linux-x64" ../.. && $(MAKE)
 
-clean:
+clean: ## Deletes build/LETHEAN_VERSION & deps/
 	@echo "WARNING: Back-up your wallet if it exists within ./build!" ; \
         read -r -p "This will destroy the v$(LETHEAN_VERSION) build directory, continue (y/N)?: " CONTINUE; \
 	[ $$CONTINUE = "y" ] || [ $$CONTINUE = "Y" ] || (echo "Exiting."; exit 1;)
 	rm -rf build/$(LETHEAN_VERSION)
 	rm -rf deps/
 
-clean-all:
+clean-all: ## Deletes build/* & deps/
 	@echo "WARNING: Back-up your wallet if it exists within ./build!" ; \
         read -r -p "This will destroy the build directory, continue (y/N)?: " CONTINUE; \
 	[ $$CONTINUE = "y" ] || [ $$CONTINUE = "Y" ] || (echo "Exiting."; exit 1;)
@@ -158,5 +160,9 @@ clean-all:
 
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
+
+
+help: ## Show this help
+	@egrep -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m make %-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: all cmake-debug debug debug-test debug-all cmake-release release release-test release-all clean tags ci-release-mac-x86_64
