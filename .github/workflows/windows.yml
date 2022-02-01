@@ -1,10 +1,22 @@
-name: Windows
+name: mingw 64
 
 on:
   push:
-    branches: [ main, dev ]
+    branches:
+      - 'main'
+      - 'dev'
+      - 'v*'
+    tags:
+      - 'v*'
+    paths-ignore:
+      - '**.md'
   pull_request:
-    branches: [ main, dev ]
+    branches:
+      - 'main'
+      - 'dev'
+      - 'v*'
+    paths-ignore:
+      - '**.md'
 
 env:
   REMOVE_BUNDLED_BOOST : rm -rf /usr/local/share/boost
@@ -42,7 +54,7 @@ jobs:
     - run: LETHEAN_RELEASE=windows make ci-release
     - uses: actions/upload-artifact@v2
       with:
-        name: windows-
+        name: windows-64
         path: ${{ github.workspace }}/build/packaged
 
 
