@@ -122,7 +122,7 @@ release-static-mac-x86_64: ## macOS64-intel
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION) -D STATIC=ON -D ARCH="x86-64" -D BUILD_64=ON -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="mac-x64" ../../.. && $(MAKE)
 
-release-static-linux-i686: ##  Linux32
+release-static-linux-i686: ## Linux32
 	mkdir -p build/$(LETHEAN_VERSION)/release
 	cd build/$(LETHEAN_VERSION)/release && cmake -D LETHEAN_VERSION=$(LETHEAN_VERSION)  -D STATIC=ON -D ARCH="i686" -D BUILD_64=OFF -D CMAKE_BUILD_TYPE=release -D BUILD_TAG="linux-x86" ../../.. && $(MAKE)
 
