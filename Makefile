@@ -82,7 +82,7 @@ ci-release: # cp & chmod release/bin/lethean*) & LICENCE > build/$LETHEAN_VERSIO
 	mkdir -p build/packaged
 	cp build/$(LETHEAN_VERSION)/release/bin/* build/packaged/
 
-zip-release: # cd into packaged, zip a clean release file for an artifact
+zip-release: ci-release # cd into packaged, zip a clean release file for an artifact
 	cp LICENSE build/packaged/LICENSE
 	cd  build/packaged/ && find . -name . -o -prune -exec rm -rf -- {} + && tar -cvf ../$(LETHEAN_RELEASE).tar .
 
