@@ -1,4 +1,4 @@
-name: lthn/chain:latest
+name: lthn/chain:testnet
 on:
   push:
     branches:
