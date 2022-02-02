@@ -64,22 +64,5 @@ jobs:
     - run: LETHEAN_RELEASE=linux make ci-release
     - uses: actions/upload-artifact@v2
       with:
+        name: linux-amd64
         path: ${{ github.workspace }}/build/packaged/
-
-  source-archive:
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v1
-      with:
-        submodules: recursive
-    - name: archive
-      run: |
-        pip install git-archive-all
-        export VERSION="lethean-$(git describe)"
-        export OUTPUT="$VERSION.tar"
-        echo "OUTPUT=$OUTPUT" >> $GITHUB_ENV
-        /home/runner/.local/bin/git-archive-all --prefix "$VERSION/" --force-submodules "$OUTPUT"
-    - uses: actions/upload-artifact@v2
-      with:
-        name: ${{ env.OUTPUT }}
-        path: /home/runner/work/blockchain/blockchain/${{ env.OUTPUT }}
