@@ -1,6 +1,4 @@
 build
-.build
-ci
 .github
 tests
 debian

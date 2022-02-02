@@ -190,9 +190,13 @@ namespace cryptonote
 
     // CHANGEME add LTHN DNS checkpoints
     static const std::vector<std::string> dns_urls = {
+		"mainnet.checkpoints.lethean.io",
+		"mainnet2.checkpoints.lethean.io"
     };
 
     static const std::vector<std::string> testnet_dns_urls = {
+		"testnet.checkpoints.lethean.io",
+		"testnet2.checkpoints.lethean.io"
     };
 
     if (!tools::dns_utils::load_txt_records_from_dns(records, testnet ? testnet_dns_urls : dns_urls))
