@@ -55,9 +55,9 @@ jobs:
       run: |
         ${{env.CCACHE_SETTINGS}}
         make release-static-mac-x86_64 -j${HOMEBREW_MAKE_JOBS}
-    - run: LETHEAN_RELEASE=macOS make ci-release
+    - run: LETHEAN_RELEASE=macOS make zip-release
     - uses: actions/upload-artifact@v2
       with:
         name: macOS-intel
-        path: ${{ github.workspace }}/build/packaged/
+        path: ${{ github.workspace }}/build/macOS.tar
 

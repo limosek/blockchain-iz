@@ -51,8 +51,8 @@ jobs:
         ${{env.CCACHE_SETTINGS}}
         make release-static-win64-boost
         make release-static-win64 -j2
-    - run: LETHEAN_RELEASE=windows make ci-release
+    - run: LETHEAN_RELEASE=windows make zip-release
     - uses: actions/upload-artifact@v2
       with:
         name: windows-amd64
-        path: ${{ github.workspace }}/build/packaged
+        path: ${{ github.workspace }}/build/windows.tar

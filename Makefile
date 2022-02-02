@@ -84,7 +84,7 @@ ci-release: # cp & chmod release/bin/lethean*) & LICENCE > build/$LETHEAN_VERSIO
 
 zip-release: # cd into packaged, zip a clean release file for an artifact
 	cp LICENSE build/packaged/LICENSE
-	cd  build/packaged/ && zip -r ../$(LETHEAN_RELEASE).zip . -i *
+	cd  build/packaged/ && find . -name . -o -prune -exec rm -rf -- {} + && tar -cvf ../$(LETHEAN_RELEASE).tar .
 
 
 release-static-linux-armv6: ## arch: armv6zk
