@@ -64,5 +64,5 @@ jobs:
     - run: LETHEAN_RELEASE=linux make zip-release
     - uses: actions/upload-artifact@v2
       with:
-        name: linux-amd64
+        name: linux.tar
         path: ${{ github.workspace }}/build/linux.tar

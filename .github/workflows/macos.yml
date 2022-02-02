@@ -58,6 +58,6 @@ jobs:
     - run: LETHEAN_RELEASE=macOS make zip-release
     - uses: actions/upload-artifact@v2
       with:
-        name: macOS-intel
+        name: macOS.tar
         path: ${{ github.workspace }}/build/macOS.tar
 

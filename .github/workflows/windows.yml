@@ -54,5 +54,5 @@ jobs:
     - run: LETHEAN_RELEASE=windows make zip-release
     - uses: actions/upload-artifact@v2
       with:
-        name: windows-amd64
+        name: windows.tar
         path: ${{ github.workspace }}/build/windows.tar
