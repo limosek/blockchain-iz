@@ -61,8 +61,8 @@ jobs:
       run: |
         ${{env.CCACHE_SETTINGS}}
         ${{env.BUILD_DEFAULT_LINUX}}
-    - run: LETHEAN_RELEASE=linux make ci-release
+    - run: LETHEAN_RELEASE=linux make zip-release
     - uses: actions/upload-artifact@v2
       with:
-        name: linux-amd64
-        path: ${{ github.workspace }}/build/packaged/
+        name: linux.tar
+        path: ${{ github.workspace }}/build/linux.tar
