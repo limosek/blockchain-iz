@@ -17,7 +17,7 @@ RUN make ci-release
 FROM debian:bullseye-slim as container
 
 COPY --from=build /lethean/build/packaged/lethean* /usr/local/bin
-RUN apt-get install -y ca-certificates
+RUN apt-get update && apt-get install -y ca-certificates
 
 # Contains the blockchain
 VOLUME /root/Lethean
