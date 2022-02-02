@@ -7,15 +7,17 @@ ARG RELEASE_TYPE=release-static
 RUN apt-get -qq update \
   && apt-get -qq --no-install-recommends install ca-certificates libboost-all-dev cmake g++ git libssl-dev make pkg-config libunbound-dev
 
-WORKDIR /usr/local/src/lethean
+WORKDIR /lethean
 COPY . .
 
 RUN make -j$(nproc) ${RELEASE_TYPE}
 
+RUN make ci-release
+
 FROM debian:bullseye-slim as container
 
-COPY --from=build /usr/local/src/lethean/build/release/bin/ /usr/local/bin
-RUN apt-get install -v ca-certificates
+COPY --from=build /lethean/build/packaged/lethean* /usr/local/bin
+RUN apt-get install -y ca-certificates
 
 # Contains the blockchain
 VOLUME /root/Lethean

@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="TestNet Docker" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+  <configuration default="false" name="lthn/chain:testnet" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
     <deployment type="dockerfile">
       <settings>
         <option name="imageTag" value="lthn/chain:testnet" />
