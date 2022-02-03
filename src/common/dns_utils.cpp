@@ -91,7 +91,7 @@ static const char*
 get_builtin_ds(void)
 {
   return
-". IN DS 19036 8 2 49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5\n";
+". IN DS 20326 8 2 E06D44B80B8F1D39A95C0B0D7C65D08458E880409BBC683457104237C7F8EC8D\n";
 }
 
 /************************************************************
@@ -198,18 +198,18 @@ public:
 
 DNSResolver::DNSResolver() : m_data(new DNSResolverData())
 {
-  int use_dns_public = 0;
+  int use_dns_public = 1;
   const char* dns_public_addr = "8.8.4.4";
-  if (auto res = getenv("DNS_PUBLIC"))
-  {
-    std::string dns_public(res);
-    // TODO: could allow parsing of IP and protocol: e.g. DNS_PUBLIC=tcp:8.8.8.8
-    if (dns_public == "tcp")
-    {
-      LOG_PRINT_L0("Using public DNS server: " << dns_public_addr << " (TCP)");
-      use_dns_public = 1;
-    }
-  }
+  
+  // Public DNS is used by default
+	if (auto res = getenv("DNS_PRIVATE"))
+	{
+		LOG_PRINT_L0("Using private DNS - /etc/hosts etc.");
+		use_dns_public = 0;
+	}
+	else {
+		LOG_PRINT_L0("Using public DNS server: " << dns_public_addr << " (TCP)");
+	}
 
   // init libunbound context
   m_data->m_ub_context = ub_ctx_create();
@@ -217,6 +217,7 @@ DNSResolver::DNSResolver() : m_data(new DNSResolverData())
   if (use_dns_public)
   {
     ub_ctx_set_fwd(m_data->m_ub_context, string_copy(dns_public_addr));
+    // Use tcp only
     ub_ctx_set_option(m_data->m_ub_context, string_copy("do-udp:"), string_copy("no"));
     ub_ctx_set_option(m_data->m_ub_context, string_copy("do-tcp:"), string_copy("yes"));
   }
