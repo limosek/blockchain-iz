@@ -226,6 +226,8 @@ namespace cryptonote
     continue;
         }
 
+	LOG_PRINT_L2("Found dns checkpoint " << record);
+
         ADD_CHECKPOINT(height, hashStr);
       }
     }
