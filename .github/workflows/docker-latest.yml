@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'v*'
+      - 'main'
     tags:
       - 'v*'
     paths-ignore:
@@ -11,6 +12,7 @@ on:
   pull_request:
     branches:
       - 'v*'
+      - 'main'
     paths-ignore:
       - '**.md'
 jobs:
