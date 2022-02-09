@@ -48,6 +48,6 @@ EXPOSE 48772
 EXPOSE 38772
 EXPOSE 38782
 
-CMD letheand --confirm-external-bind --seed-node=seed.lethean.io --data-dir=$DATA_DIR --testnet-data-dir=$TEST_DATA_DIR --log-level=$LOG_LEVEL \
+CMD letheand --confirm-external-bind --data-dir=$DATA_DIR --testnet-data-dir=$TEST_DATA_DIR --log-level=$LOG_LEVEL \
     --testnet-rpc-bind-port=$TEST_RPC_BIND_PORT --p2p-bind-ip=$P2P_BIND_IP --testnet-p2p-bind-port=$TEST_P2P_BIND_PORT --p2p-bind-port=$P2P_BIND_PORT --rpc-bind-ip=$RPC_BIND_IP --rpc-bind-port=$RPC_BIND_PORT
 
