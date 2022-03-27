@@ -66,3 +66,12 @@ jobs:
       with:
         name: linux.tar
         path: ${{ github.workspace }}/build/linux.tar
+    - name: Get the version
+      id: get_version
+      if: startsWith(github.ref, 'refs/tags/')
+      run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: ${{ github.workspace }}/build/linux.tar
