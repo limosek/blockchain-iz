@@ -66,7 +66,7 @@ jobs:
         p12-password: ${{ secrets.MAC_DEVELOPER_PASS }}
     - run: make ci-release
     - run: chmod +x build/packaged/lethean*
-    - run: "codesign -s 'Developer ID Application: Lethean LTD (W2DNA5L5DY)' build/packaged/lethean*"
+    - run: "codesign --options runtime -s 'Developer ID Application: Lethean LTD (W2DNA5L5DY)' build/packaged/lethean*"
     - name: Notarize
       env:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
