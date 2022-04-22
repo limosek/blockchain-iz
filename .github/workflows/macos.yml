@@ -55,7 +55,19 @@ jobs:
       run: |
         ${{env.CCACHE_SETTINGS}}
         make release-static-mac-x86_64 -j${HOMEBREW_MAKE_JOBS}
-    - run: LETHEAN_RELEASE=macOS make zip-release
+    - name: Import Code-Signing Certificates for macOS
+      uses: Apple-Actions/import-codesign-certs@v1
+      with:
+        # The certificates in a PKCS12 file encoded as a base64 string
+        p12-file-base64: ${{ secrets.MAC_DEVELOPER_CERT }}
+        # The password used to import the PKCS12 file.
+        p12-password: ${{ secrets.MAC_DEVELOPER_PASS }}
+    - run: make ci-release
+    - run: chmod +x build/packaged/lethean*
+    - run: "codesign -s 'Developer ID Application: Lethean LTD (W2DNA5L5DY)' build/packaged/lethean*"
+    - run: |
+          cp LICENSE build/packaged/LICENSE
+          cd  build/packaged/ && tar -cvf ../macOS.tar .
     - uses: actions/upload-artifact@v2
       with:
         name: macOS.tar
