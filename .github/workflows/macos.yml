@@ -67,7 +67,10 @@ jobs:
     - run: make ci-release
     - run: chmod +x build/packaged/lethean*
     - run: "codesign -s 'Developer ID Application: Lethean LTD (W2DNA5L5DY)' build/packaged/lethean*"
-    - run: |
+    - name: Notarize
+      env:
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+      run: |
           cp LICENSE build/packaged/LICENSE
           ditto -c -k --keepParent ./build/packaged ./build/macOS.zip
           gon -log-level=info ./.github/gon-notarize.json
