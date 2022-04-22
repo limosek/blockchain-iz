@@ -1,11 +1,25 @@
 {
-  "notarize": [{
-    "path": "./build/macOS.zip",
-    "bundle_id": "com.lthn.app",
-    "staple": false
-  }],
+  "source" : [
+    "./build/packaged/letheand",
+    "./build/packaged/lethean-blockchain-export",
+    "./build/packaged/lethean-blockchain-import",
+    "./build/packaged/lethean-wallet-cli",
+    "./build/packaged/lethean-wallet-rpc",
+    "./build/packaged/lethean-wallet-vpn-rpc"
+  ],
+  "bundle_id": "com.lthn.app",
+  "sign" :{
+    "application_identity" : "Developer ID Application: Lethean LTD (W2DNA5L5DY)"
+  },
   "apple_id": {
     "username": "snider@lt.hn",
     "password": "@env:APPLE_PASSWORD"
+  },
+  "dmg" :{
+    "output_path":  "lethean-cli-macos.dmg",
+    "volume_name":  "lethean-cli"
+  },
+  "zip" :{
+    "output_path" : "lethean-cli-macos.zip"
   }
 }
