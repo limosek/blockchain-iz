@@ -49,8 +49,10 @@ jobs:
         key: ccache-${{ runner.os }}-build-${{ github.sha }}
         restore-keys: ccache-${{ runner.os }}-build-
     - name: install dependencies
-      run: brew install hidapi openssl zmq libpgm miniupnpc ldns expat libunwind-headers protobuf ccache
-    - run: brew install --build-from-source ./utils/homebrew/boost@169.rb
+      run: |
+        brew install hidapi openssl zmq libpgm miniupnpc ldns expat libunwind-headers protobuf ccache
+        brew install mitchellh/gon/gon
+        brew install --build-from-source ./utils/homebrew/boost@169.rb
     - name: build
       run: |
         ${{env.CCACHE_SETTINGS}}
@@ -67,11 +69,12 @@ jobs:
     - run: "codesign -s 'Developer ID Application: Lethean LTD (W2DNA5L5DY)' build/packaged/lethean*"
     - run: |
           cp LICENSE build/packaged/LICENSE
-          cd  build/packaged/ && tar -cvf ../macOS.tar .
+          ditto -c -k --keepParent ./build/packaged ./build/macOS.zip
+          gon -log-level=info ./.github/gon-notarize.json
     - uses: actions/upload-artifact@v2
       with:
-        name: macOS.tar
-        path: ${{ github.workspace }}/build/macOS.tar
+        name: macOS.zip
+        path: ${{ github.workspace }}/build/macOS.zip
     - name: Get the version
       id: get_version
       if: startsWith(github.ref, 'refs/tags/')

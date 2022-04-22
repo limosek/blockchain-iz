@@ -1,0 +1,11 @@
+{
+  "notarize": [{
+    "path": "./build/macOS.zip",
+    "bundle_id": "com.lthn.app",
+    "staple": false
+  }],
+  "apple_id": {
+    "username": "snider@lt.hn",
+    "password": "@env:APPLE_PASSWORD"
+  }
+}
