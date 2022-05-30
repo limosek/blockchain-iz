@@ -28,6 +28,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
+          tags: |
+            # set latest tag for master branch
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+          flavor: |
+            latest=auto
+            prefix=
+            suffix=
           images: lthn/wallet
       - uses: docker/login-action@v2
         with:
