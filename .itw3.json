@@ -3,7 +3,7 @@
   "tags": {
     "ticker": "lthn"
   },
-  "types": ["bin"],
+  "type": "bin",
   "name": "Lethean Blockchain",
   "install": "/cli/lthn",
   "uninstall": [
@@ -13,9 +13,9 @@
   "commands": {
     "chain.export": "lethean-blockchain-export --data-dir {data-dir}",
     "chain.import": "lethean-blockchain-import --data-dir {data-dir}",
-    "chain.start": "lethean-blockchain-import --data-dir {data-dir}",
-    "wallet.rpc.start": "lethean-blockchain-import --data-dir {data-dir}",
-    "wallet.cli.comand": "lethean-blockchain-import --data-dir {data-dir}",
+    "chain.start": "letheand --data-dir {data-dir}",
+    "wallet.rpc.start": "lethean-wallet-rpc --data-dir {data-dir}",
+    "wallet.cli.comand": "lethean-wallet-cli --data-dir {data-dir}",
     "wallet.cli.tty": "lethean-blockchain-import --data-dir {data-dir}",
     "wallet.new.tty": "lethean-blockchain-import --data-dir {data-dir}",
     "wallet.new.key.seed": "lethean-blockchain-import --data-dir {data-dir}",
