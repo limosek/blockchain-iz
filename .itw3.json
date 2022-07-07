@@ -6,7 +6,7 @@
   },
   "type": "bin",
   "name": "Lethean Blockchain",
-  "install": "/cli/lthn",
+  "install": "lthn",
   "uninstall": [
     {"rm": "/cli/lthn"},
     {"rm": "/data/lmdb"}
