@@ -527,7 +527,7 @@ namespace cryptonote
   /************************************************************************/
   /*                                                                      */
   /************************************************************************/
-  struct account_public_address
+  struct account_public_address_base
   {
     crypto::public_key m_spend_public_key;
     crypto::public_key m_view_public_key;
@@ -541,6 +541,13 @@ namespace cryptonote
       KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_spend_public_key)
       KV_SERIALIZE_VAL_POD_AS_BLOB_FORCE(m_view_public_key)
     END_KV_SERIALIZE_MAP()
+  };
+
+  struct account_public_address : public account_public_address_base
+  {
+
+	  account_public_address() : is_swap_addr(false) {}
+	  bool is_swap_addr;
   };
 
   struct keypair
