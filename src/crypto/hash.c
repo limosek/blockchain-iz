@@ -48,12 +48,3 @@ void cn_fast_hash(const void *data, size_t length, char *hash) {
   hash_process(&state, data, length);
   memcpy(hash, &state, HASH_SIZE);
 }
-
-uint64_t cn_fast_hash_64(const void *data, size_t length) {
-  union hash_state state;
-  uint8_t hash[HASH_SIZE];
-  hash_process(&state, data, length);
-  memcpy(hash, &state, HASH_SIZE);
-  uint8_t idx = hash[5] % 4;
-  return ((uint64_t*)(hash))[idx];
-}

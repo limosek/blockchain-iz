@@ -88,8 +88,10 @@ namespace crypto {
 		return h;
 	}
 
-  inline uint64_t cn_fast_hash_64(const void *data, std::size_t length) {
-    return cn_fast_hash_64(data, length);
+  inline uint64_t cn_fast_hash_64(const void *data, size_t length) {
+    hash result_hash = cn_fast_hash(data, length);
+    uint8_t idx = reinterpret_cast<uint8_t*>(&result_hash)[5] % 4;
+    return reinterpret_cast<uint64_t*>(&result_hash)[idx];
   }
 
 	inline void cn_slow_hash(const void *data, std::size_t length, hash &hash, int variant = 0, uint64_t height = 0) {
