@@ -414,7 +414,6 @@ namespace cryptonote
   /* Should be used only on swap tx */
   bool get_payment_id_from_swap_tx_extra_nonce(const blobdata& extra_nonce, crypto::hash& payment_id)
   {
-    LOG_ERROR("ID : " + to_string((int)extra_nonce[0]) + " size: " + to_string(extra_nonce.size()));
     if(sizeof(crypto::hash) + 1 > extra_nonce.size())
       return false;
     if(TX_EXTRA_NONCE_PAYMENT_ID != extra_nonce[0])
