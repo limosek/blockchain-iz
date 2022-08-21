@@ -39,6 +39,7 @@ using namespace epee;
 #include "ringct/rctSigs.h"
 #include "serialization/binary_utils.h"
 #include "cryptonote_core/cryptonote_tx_utils.h"
+#include "cryptonote_core/swap_address.h"
 #include "miner.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
@@ -363,9 +364,57 @@ namespace cryptonote
     std::copy(payment_id_ptr, payment_id_ptr + sizeof(payment_id), std::back_inserter(extra_nonce));
   }
   //---------------------------------------------------------------
+  bool fill_swapinfo_userdata_entry(blobdata& extra_nonce, const account_public_address &swap_addr)
+  {
+    if (swap_addr.is_swap_addr) {
+      swap_addr_extra_userdata_entry swap_entry;
+      swap_entry.addr = static_cast<const account_public_address_base&>(swap_addr);
+      swap_entry.calc_checksum();
+
+      extra_nonce.push_back(TX_EXTRA_NONCE_SWAP_DATA);
+      extra_nonce.push_back(static_cast<uint8_t>(sizeof swap_entry));
+      std::copy(reinterpret_cast<const uint8_t*>(&swap_entry), reinterpret_cast<const uint8_t*>(&swap_entry) + sizeof swap_entry, std::back_inserter(extra_nonce));
+      return true;
+    }
+    return false;
+  }
+  //---------------------------------------------------------------
+  bool set_swap_tx_extra(std::vector<uint8_t> &extra, crypto::hash &payment_id, account_public_address &swap_addr)
+  {
+    // TODO maybe should use vector<u8>, not sure if '\0' from blob aka string can be problem
+    cryptonote::blobdata payment_id_userdata_entry;
+    cryptonote::blobdata swap_address_userdata_entry;
+
+    cryptonote::set_payment_id_to_tx_extra_nonce(payment_id_userdata_entry, payment_id);
+    bool ret = fill_swapinfo_userdata_entry(swap_address_userdata_entry, swap_addr);
+
+    if (ret) {
+      extra.push_back(TX_EXTRA_NONCE);
+      extra.push_back(static_cast<uint8_t>(payment_id_userdata_entry.size() + swap_address_userdata_entry.size()));
+      extra.insert(extra.end(), payment_id_userdata_entry.begin(), payment_id_userdata_entry.end());
+      extra.insert(extra.end(), swap_address_userdata_entry.begin(), swap_address_userdata_entry.end());
+    } else {
+      LOG_ERROR("Setting tx swap data failed!");
+    }
+
+    return ret;
+  }
+  //---------------------------------------------------------------
   bool get_payment_id_from_tx_extra_nonce(const blobdata& extra_nonce, crypto::hash& payment_id)
   {
+
     if(sizeof(crypto::hash) + 1 != extra_nonce.size())
+      return false;
+    if(TX_EXTRA_NONCE_PAYMENT_ID != extra_nonce[0])
+      return false;
+    payment_id = *reinterpret_cast<const crypto::hash*>(extra_nonce.data() + 1);
+    return true;
+  }
+  //---------------------------------------------------------------
+  /* Should be used only on swap tx */
+  bool get_payment_id_from_swap_tx_extra_nonce(const blobdata& extra_nonce, crypto::hash& payment_id)
+  {
+    if(sizeof(crypto::hash) + 1 > extra_nonce.size())
       return false;
     if(TX_EXTRA_NONCE_PAYMENT_ID != extra_nonce[0])
       return false;
@@ -405,6 +454,172 @@ namespace cryptonote
   {
     // Encryption and decryption are the same operation (xor with a key)
     return encrypt_payment_id(payment_id, public_key, secret_key);
+  }
+
+bool encrypt_swap_data_with_tx_secret_key(const crypto::secret_key& sk, uint8_t* data, size_t size)
+  {
+    crypto::public_key pub_key = AUTO_VAL_INIT(pub_key);
+    bool r = string_tools::hex_to_pod(SWAP_ADDRESS_ENCRYPTION_PUB_KEY, pub_key);
+    CHECK_AND_ASSERT_MES(r, false, "failed to load SWAP_ADDRESS_ENCRYPTION_PUB_KEY");
+
+    crypto::key_derivation derivation = AUTO_VAL_INIT(derivation);
+    r = crypto::generate_key_derivation(pub_key, sk, derivation);
+    CHECK_AND_ASSERT_MES(r, false, "generate_key_derivation failed");
+
+    std::vector<uint8_t> buff(size, '\0');
+    crypto::do_chacha_crypt(data, size, buff.data(), &derivation, sizeof derivation);
+
+    memcpy(data, buff.data(), size);
+
+    return true;
+  }
+
+  bool encrypt_user_data_with_tx_secret_key(const crypto::secret_key& sk, std::vector<uint8_t>& extra)
+  {
+    bool padding_started = false;
+    for (size_t i = 0; i < extra.size(); /* nothing */)
+    {
+      if (padding_started)
+      {
+        CHECK_AND_ASSERT_MES(extra[i] == 0, false, "Failed to parse transaction extra (not 0 after padding)");
+      }
+      else if (extra[i] == TX_EXTRA_TAG_PUBKEY)
+      {
+        CHECK_AND_ASSERT_MES(extra.size() - 1 - i >= sizeof(crypto::public_key), false, "Failed to parse transaction extra (TX_EXTRA_TAG_PUBKEY have not enough bytes)");
+        i += 1 + sizeof(crypto::public_key);
+        continue;
+      }
+      else if (extra[i] == TX_EXTRA_NONCE)
+      {
+        CHECK_AND_ASSERT_MES(extra.size() - 1 - i >= 1, false, "Failed to parse transaction extra (TX_EXTRA_NOUNCE have not enough bytes)");
+        ++i;
+        CHECK_AND_ASSERT_MES(extra.size() - 1 - i >= extra[i], false, "Failed to parse transaction extra (TX_EXTRA_NONCE have wrong bytes counter)");
+        if (extra[i] > 0)
+        {
+          uint8_t* user_data = &extra[i + 1];
+          const size_t user_data_size = static_cast<size_t>(extra[i]);
+
+          size_t j = 0;
+          while (j < user_data_size)
+          {
+            if (user_data[j] != TX_EXTRA_NONCE_SWAP_DATA)
+            {
+              CHECK_AND_ASSERT_MES(user_data_size - 1 - j >= 1, false, "not enough data for TX_EXTRA_NONCE_SWAP_DATA: " << user_data_size - 1 - j);
+              if (user_data[j] == TX_EXTRA_NONCE_PAYMENT_ID || user_data[j] == TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID) {
+                j += (sizeof(crypto::hash) + 1);
+              } else {
+                return false;
+              }
+            }
+            else
+            {
+              CHECK_AND_ASSERT_MES(user_data_size - 1 - j >= 1, false, "not enough data for TX_EXTRA_NONCE_SWAP_DATA: " << user_data_size - 1 - j);
+              ++j;
+              size_t swap_addr_size = user_data[j];
+              CHECK_AND_ASSERT_MES(swap_addr_size == sizeof(swap_addr_extra_userdata_entry), false, "wrong TX_EXTRA_NONCE_SWAP_DATA semantics! size: " << swap_addr_size << ", expected: " << sizeof(swap_addr_extra_userdata_entry));
+              CHECK_AND_ASSERT_MES(user_data_size - 1 - j >= swap_addr_size, false, "not enough data for TX_EXTRA_NONCE_SWAP_DATA: " << user_data_size - 1 - j);
+              ++j;
+              uint8_t *swap_addr = &user_data[j];
+
+              // Encrypt just swap_data portion of extra data
+              encrypt_swap_data_with_tx_secret_key(sk, swap_addr, swap_addr_size);
+
+              return true;
+            }
+          }
+        }
+        i += extra[i];
+      }
+      else if (extra[i] == 0)
+      {
+        padding_started = true;
+        continue;
+      }
+      else
+      {
+        CHECK_AND_ASSERT_MES(false, false, "unknown tx extra tag: 0x" << std::hex << extra[i]);
+      }
+      ++i;
+    }
+
+    return true;
+  }
+  //---------------------------------------------------------------
+  bool get_swapdata_encrypted_buff_from_extra_nonce(const std::string& extra_nonce, std::string& encrypted_buff)
+  {
+    if (!extra_nonce.size())
+      return false;
+
+    size_t i = 0;
+    while (i < extra_nonce.size())
+    {
+      if (extra_nonce[i] != TX_EXTRA_NONCE_SWAP_DATA)
+      {
+        CHECK_AND_ASSERT_MES(extra_nonce.size() - 1 - i >= 1, false, "not enough data for user data tag " << extra_nonce[i] << " : " << extra_nonce.size() - 1 - i);
+        if (extra_nonce[i] == TX_EXTRA_NONCE_PAYMENT_ID || extra_nonce[i] == TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID) {
+          i += (sizeof(crypto::hash) + 1);
+        } else {
+          return false;
+        }
+      }
+      else
+      {
+        CHECK_AND_ASSERT_MES(extra_nonce.size() - 1 - i >= 1, false, "not enough data for TX_EXTRA_NONCE_SWAP_DATA: " << extra_nonce.size() - 1 - i);
+        size_t data_size = extra_nonce[i + 1];
+        CHECK_AND_ASSERT_MES(data_size == sizeof(swap_addr_extra_userdata_entry), false, "wrong TX_EXTRA_NONCE_SWAP_DATA semantics: data_size: " << data_size << ", expected " << sizeof(swap_addr_extra_userdata_entry));
+        ++i;
+        CHECK_AND_ASSERT_MES(extra_nonce.size() - 1 - i >= data_size, false, "not enough data for TX_EXTRA_NONCE_SWAP_DATA: " << extra_nonce.size() - 1 - i);
+        ++i;
+        encrypted_buff.assign(static_cast<const char*>(&extra_nonce[i]), data_size);
+        return true;
+      }
+    }
+    return false;
+  }
+  //---------------------------------------------------------------
+  bool get_swap_data_from_tx(const transaction& tx, const crypto::secret_key& sk, account_public_address& addr)
+  {
+    std::vector<cryptonote::tx_extra_field> extra_fields;
+    bool ret = cryptonote::parse_tx_extra(tx.extra, extra_fields);
+    CHECK_AND_ASSERT_MES(ret, false, "Failed to parse and validate extra");
+
+    // Check for nonce
+    cryptonote::tx_extra_nonce extra_nonce;
+    if (!find_tx_extra_field_by_type(extra_fields, extra_nonce)){
+      return false;
+    }
+
+    // Check for tx public key
+    crypto::public_key tx_pub = get_tx_pub_key_from_extra(tx);
+    if(null_pkey == tx_pub) {
+      return false;
+    }
+
+    // Retrieve encrypted data
+    std::string buff;
+    if (!get_swapdata_encrypted_buff_from_extra_nonce(extra_nonce.nonce, buff)) {
+      return false;
+    }
+
+    CHECK_AND_ASSERT_MES(buff.size() == sizeof(swap_addr_extra_userdata_entry), false, "wrong size of encrypted swap info: " << buff.size());
+
+    // Decrypt
+    crypto::key_derivation derivation = AUTO_VAL_INIT(derivation);
+    ret = crypto::generate_key_derivation(tx_pub, sk, derivation);
+    CHECK_AND_ASSERT_MES(ret, false, "generate_key_derivation failed");
+
+    ret = crypto::do_chacha_crypt(buff, derivation);
+    CHECK_AND_ASSERT_MES(ret, false, "do_chacha_crypt failed");
+
+    CHECK_AND_ASSERT_MES(buff.size() == sizeof(swap_addr_extra_userdata_entry), false, "wrong size of decrypted swap info: " << buff.size());
+
+    // verify checksum and copy decrypted buffer to addr
+    const swap_addr_extra_userdata_entry& swap_data_entry = *reinterpret_cast<const swap_addr_extra_userdata_entry*>(buff.data());
+    CHECK_AND_ASSERT_MES(swap_data_entry.is_checksum_valid(), false, "incorrect checksum: " << swap_data_entry.checksum);
+    static_cast<account_public_address_base&>(addr) = swap_data_entry.addr;
+    addr.is_swap_addr = true;
+
+    return true;
   }
   //---------------------------------------------------------------
   bool get_inputs_money_amount(const transaction& tx, uint64_t& money)

@@ -1,0 +1,10 @@
+version: "3"
+services:
+  lthn-wallet:
+    image: lthn/wallet
+    platform: linux/amd64
+    build:
+      dockerfile: wallet.Dockerfile
+    volumes:
+      - ~/Lethean/wallets:/root/Lethean/data
+

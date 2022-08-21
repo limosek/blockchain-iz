@@ -42,6 +42,10 @@ invokes cmake commands as needed.
 
 Boost 1.69 os the last working version, you may need to install LinuxBrew/HomeBrew, then run
 
+Install homebrew as your user; it works for Linux too.
+
+`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+
 `brew install --build-from-source ./utils/homebrew/boost@169.rb`
 
 * Install the dependencies

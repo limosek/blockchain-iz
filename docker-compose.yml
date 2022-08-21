@@ -1,9 +1,9 @@
-version: "3.9"
+version: "3"
 services:
-  testnet:
-    image: lthn/chain:testnet
+  lthn-chain:
+    image: lthn/chain
     volumes:
-      - ~/Lethean/data:/root
-volumes:
-  testnetVolume01: {}
-
+      - ~/Lethean/data:/root/Lethean/data
+    ports:
+      - 48772
+      - 48782

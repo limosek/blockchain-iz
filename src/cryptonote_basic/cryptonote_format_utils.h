@@ -70,7 +70,12 @@ namespace cryptonote
   bool remove_field_from_tx_extra(std::vector<uint8_t>& tx_extra, const std::type_info &type);
   void set_payment_id_to_tx_extra_nonce(blobdata& extra_nonce, const crypto::hash& payment_id);
   void set_encrypted_payment_id_to_tx_extra_nonce(blobdata& extra_nonce, const crypto::hash8& payment_id);
+  bool fill_swapinfo_userdata_entry(blobdata& extra_nonce, const account_public_address &swap_addr);
+  bool set_swap_tx_extra(std::vector<uint8_t> &extra, crypto::hash &payment_id, account_public_address &swap_addr);
+  bool encrypt_user_data_with_tx_secret_key(const crypto::secret_key& sk, std::vector<uint8_t>& extra);
   bool get_payment_id_from_tx_extra_nonce(const blobdata& extra_nonce, crypto::hash& payment_id);
+  bool get_payment_id_from_swap_tx_extra_nonce(const blobdata& extra_nonce, crypto::hash& payment_id);
+  bool get_swap_data_from_tx(const transaction& tx, const crypto::secret_key& sk, account_public_address& addr);
   bool get_encrypted_payment_id_from_tx_extra_nonce(const blobdata& extra_nonce, crypto::hash8& payment_id);
   bool is_out_to_acc(const account_keys& acc, const txout_to_key& out_key, const crypto::public_key& tx_pub_key, size_t output_index);
   bool is_out_to_acc_precomp(const crypto::public_key& spend_public_key, const txout_to_key& out_key, const crypto::key_derivation& derivation, size_t output_index);
