@@ -77,6 +77,32 @@ namespace crypto {
     memcpy(&unwrap(unwrap(key)), pwd_hash.data(), sizeof(key));
   }
 
+  inline void generate_chacha8_key_keccak(const void *data, size_t size, chacha8_key& key) {
+    char result[HASH_SIZE];
+    cn_fast_hash(data, size, result);
+    memcpy(&key, data, sizeof(key));
+    // Clean, for safety ???
+    memset(result, 0, HASH_SIZE);
+  }
+
+  inline void do_chacha_crypt(const void *src, size_t src_size, void *target, const void *key, size_t key_size) {
+    crypto::chacha8_key ckey;
+    crypto::chacha8_iv civ;
+    memset(&civ, 0, sizeof(civ));
+    crypto::generate_chacha8_key_keccak(key, key_size, ckey);
+    crypto::chacha8(src, src_size, ckey, civ, (char*)target);
+  }
+
+  template<typename T>
+  inline bool do_chacha_crypt(std::string& buff, const T& pass)
+  {
+    std::string buff_target;
+    buff_target.resize(buff.size());
+    do_chacha_crypt(buff.data(), buff.size(), (void*)buff_target.data(), &pass, sizeof(pass));
+    buff = buff_target;
+    return true;
+  }
+
   inline void generate_chacha8_key(std::string password, chacha8_key& key) {
     return generate_chacha8_key(password.data(), password.size(), key);
   }
