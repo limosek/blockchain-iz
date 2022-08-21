@@ -31,6 +31,7 @@
 #pragma once
 
 
+#include <cstddef>
 #define TX_EXTRA_PADDING_MAX_COUNT          255
 #define TX_EXTRA_NONCE_MAX_COUNT            255
 
@@ -42,6 +43,9 @@
 
 #define TX_EXTRA_NONCE_PAYMENT_ID           0x00
 #define TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID 0x01
+#define TX_EXTRA_NONCE_SWAP_DATA 0x02
+
+#define TX_EXTRA_NONCE_SIZE_MAX 250
 
 namespace cryptonote
 {
