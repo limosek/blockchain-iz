@@ -724,7 +724,7 @@ add_subdirectory(src)
 
 #treat_warnings_as_errors(contrib src)
 
-option(BUILD_TESTS "Build tests." ON)
+option(BUILD_TESTS "Build tests." OFF)
 
 if(BUILD_TESTS)
   add_subdirectory(tests)
