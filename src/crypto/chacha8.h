@@ -80,7 +80,7 @@ namespace crypto {
   inline void generate_chacha8_key_keccak(const void *data, size_t size, chacha8_key& key) {
     char result[HASH_SIZE];
     cn_fast_hash(data, size, result);
-    memcpy(&key, data, sizeof(key));
+    memcpy(&key, result, sizeof(key));
     // Clean, for safety ???
     memset(result, 0, HASH_SIZE);
   }
