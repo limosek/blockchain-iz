@@ -496,4 +496,62 @@ namespace cryptonote
     return true;
   }
   //---------------------------------------------------------------
+  bool is_swap_tx(const transaction& tx, const std::vector<tx_destination_entry>& destinations)
+  {
+    // a tx is a swap tx if it has at least one swap destination address (null_pkey output) AND swap info in extra.userdata
+    bool has_swap_destinations = false;
+
+    if (!destinations.empty())
+    {
+      for (auto& d : destinations)
+      {
+        if (d.addr.is_swap_addr)
+        {
+          has_swap_destinations = true;
+          break;
+        }
+      }
+    }
+    else
+    {
+      // use tx outputs if destinations was not provided
+      for (auto& o : tx.vout)
+      {
+        if (o.target.type() == typeid(txout_to_key) && boost::get<txout_to_key>(o.target).key == null_pkey)
+        {
+          has_swap_destinations = true;
+          break;
+        }
+      }
+    }
+
+    if (!has_swap_destinations)
+      return false; // No swap destinations
+
+    std::vector<cryptonote::tx_extra_field> extra_fields;
+
+    if (cryptonote::parse_tx_extra(tx.extra, extra_fields)) {
+      cryptonote::tx_extra_nonce extra_nonce;
+      if (find_tx_extra_field_by_type(extra_fields, extra_nonce)) {
+        std::string buff;
+        if(!cryptonote::get_swapdata_encrypted_buff_from_extra_nonce(extra_nonce.nonce, buff)) {
+          return false; // No swap data
+        }
+      } else {
+        return false; // No extra nonce
+      }
+    } else {
+      return false; // No extra
+    }
+
+    // there is a swap data, consider it as a swap tx
+    return true;
+  }
+  //---------------------------------------------------------------
+  bool is_swap_tx(const transaction& tx)
+  {
+    static std::vector<tx_destination_entry> empty_destinations;
+    return is_swap_tx(tx, empty_destinations);
+  }
+  //---------------------------------------------------------------
 }
