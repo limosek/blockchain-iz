@@ -289,10 +289,20 @@ namespace cryptonote
 
       tx_out out;
       out.amount = dst_entr.amount;
-      txout_to_key tk;
-      tk.key = out_eph_public_key;
+
+      txout_to_key tk = AUTO_VAL_INIT(tk);
+
+      if (dst_entr.addr.is_swap_addr) {
+        // Zero key for swap txs
+        // TODO Should probably do all address math only when neccessary
+      } else {
+	      tk.key = out_eph_public_key;
+      }
+
+
       out.target = tk;
       tx.vout.push_back(out);
+
       output_index++;
       summary_outs_money += dst_entr.amount;
     }
