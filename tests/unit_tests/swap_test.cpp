@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include "cryptonote_basic/cryptonote_basic.h"
 #include "cryptonote_basic/cryptonote_format_utils.h"
+#include "cryptonote_core/cryptonote_tx_utils.h"
 #include "crypto/random.h"
 #include "cryptonote_core/swap_address.h"
 
@@ -15,6 +16,46 @@ TEST(swap_address, swap_addr_extra_userdata_entry_from_addr)
   entry.addr = static_cast<const cryptonote::account_public_address_base&>(swap_addr);
   entry.calc_checksum();
   ASSERT_TRUE(entry.is_checksum_valid());
+}
+
+TEST(swap_address, swap_parse_addr_from_str)
+{
+  cryptonote::account_public_address new_chain_addr = AUTO_VAL_INIT(new_chain_addr);
+  cryptonote::account_public_address old_chain_addr = AUTO_VAL_INIT(old_chain_addr);
+  cryptonote::account_public_address invalid_addr = AUTO_VAL_INIT(invalid_addr);
+
+  std::string new_chain_addr_str = "iTxtQTLo1H8aGripS8mzG6c1Y3WcoSzzBFb4o7o2xUJmfJgLxxscutm9s9EMYXYnaaUN1E1XpMUHREcFbqAeSBzk61pYu2Tjhs";
+  std::string old_chain_addr_str = "iz5vDmtTSk7cyKdHr6Jv7vVSpx3thD6wGdXuyETg81KBfSVsZKeBewQUBF25uAtbJ3j9sHJzVHKfSNPu9aYbBnSv239GjxfER";
+  std::string invalid_addr_str = "n05vDmtTSk7cyKdHr6Jv7vVSpx3thD6wGdXuyETg81KBfSVsZKeBewQUBF25uAtbJ3j9sHJzVHKfSNPu9aYbBnSv239GjxfER";
+
+  bool has_payment_id;
+  crypto::hash8 payment_id;
+
+  ASSERT_TRUE(
+      cryptonote::get_account_integrated_address_from_str(new_chain_addr,
+      has_payment_id,
+      payment_id,
+      false,
+      new_chain_addr_str)
+      );
+  ASSERT_TRUE(new_chain_addr.is_swap_addr);
+
+  ASSERT_TRUE(
+      cryptonote::get_account_integrated_address_from_str(old_chain_addr,
+      has_payment_id,
+      payment_id,
+      false,
+      old_chain_addr_str)
+      );
+  ASSERT_FALSE(old_chain_addr.is_swap_addr);
+
+  ASSERT_FALSE(
+      cryptonote::get_account_integrated_address_from_str(invalid_addr,
+      has_payment_id,
+      payment_id,
+      false,
+      invalid_addr_str)
+      );
 }
 
 TEST(swap_tx, fill_tx_extra)
@@ -55,4 +96,10 @@ TEST(swap_tx, fill_tx_extra)
 
   ASSERT_EQ(swap_addr.m_spend_public_key, swap_addr2.m_spend_public_key);
   ASSERT_EQ(swap_addr.m_view_public_key, swap_addr2.m_view_public_key);
+
+  vector<cryptonote::tx_destination_entry> fake_dest = {
+    cryptonote::tx_destination_entry(80085, swap_addr)
+  };
+
+  ASSERT_TRUE(cryptonote::is_swap_tx(tx, fake_dest));
 }
