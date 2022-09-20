@@ -169,48 +169,54 @@ namespace cryptonote
     keypair txkey = keypair::generate();
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_pub_key));
     add_tx_pub_key_to_extra(tx, txkey.pub);
+
     tx_key = txkey.sec;
 
-    // if we have a stealth payment id, find it and encrypt it with the tx key now
-    std::vector<tx_extra_field> tx_extra_fields;
-    if (parse_tx_extra(tx.extra, tx_extra_fields))
-    {
-      tx_extra_nonce extra_nonce;
-      if (find_tx_extra_field_by_type(tx_extra_fields, extra_nonce))
+    if (is_swap_tx(tx, destinations)) {
+      encrypt_user_data_with_tx_secret_key(txkey.sec, tx.extra);
+    } else {
+      // Only encrypt payment id if this is not swap tx.
+      // if we have a stealth payment id, find it and encrypt it with the tx key now
+      std::vector<tx_extra_field> tx_extra_fields;
+      if (parse_tx_extra(tx.extra, tx_extra_fields))
       {
-        crypto::hash8 payment_id = null_hash8;
-        if (get_encrypted_payment_id_from_tx_extra_nonce(extra_nonce.nonce, payment_id))
+        tx_extra_nonce extra_nonce;
+        if (find_tx_extra_field_by_type(tx_extra_fields, extra_nonce))
         {
-          LOG_PRINT_L2("Encrypting payment id " << payment_id);
-          crypto::public_key view_key_pub = get_destination_view_key_pub(destinations, sender_account_keys);
-          if (view_key_pub == null_pkey)
+          crypto::hash8 payment_id = null_hash8;
+          if (get_encrypted_payment_id_from_tx_extra_nonce(extra_nonce.nonce, payment_id))
           {
-            LOG_ERROR("Destinations have to have exactly one output to support encrypted payment ids");
-            return false;
-          }
+            LOG_PRINT_L2("Encrypting payment id " << payment_id);
+            crypto::public_key view_key_pub = get_destination_view_key_pub(destinations, sender_account_keys);
+            if (view_key_pub == null_pkey)
+            {
+              LOG_ERROR("Destinations have to have exactly one output to support encrypted payment ids");
+              return false;
+            }
 
-          if (!encrypt_payment_id(payment_id, view_key_pub, txkey.sec))
-          {
-            LOG_ERROR("Failed to encrypt payment id");
-            return false;
-          }
+            if (!encrypt_payment_id(payment_id, view_key_pub, txkey.sec))
+            {
+              LOG_ERROR("Failed to encrypt payment id");
+              return false;
+            }
 
-          std::string extra_nonce;
-          set_encrypted_payment_id_to_tx_extra_nonce(extra_nonce, payment_id);
-          remove_field_from_tx_extra(tx.extra, typeid(tx_extra_nonce));
-          if (!add_extra_nonce_to_tx_extra(tx.extra, extra_nonce))
-          {
-            LOG_ERROR("Failed to add encrypted payment id to tx extra");
-            return false;
+            std::string extra_nonce;
+            set_encrypted_payment_id_to_tx_extra_nonce(extra_nonce, payment_id);
+            remove_field_from_tx_extra(tx.extra, typeid(tx_extra_nonce));
+            if (!add_extra_nonce_to_tx_extra(tx.extra, extra_nonce))
+            {
+              LOG_ERROR("Failed to add encrypted payment id to tx extra");
+              return false;
+            }
+            LOG_PRINT_L1("Encrypted payment ID: " << payment_id);
           }
-          LOG_PRINT_L1("Encrypted payment ID: " << payment_id);
         }
       }
-    }
-    else
-    {
-      LOG_ERROR("Failed to parse tx extra");
-      return false;
+      else
+      {
+        LOG_ERROR("Failed to parse tx extra");
+        return false;
+      }
     }
 
     struct input_generation_context_data
