@@ -79,6 +79,8 @@ namespace cryptonote
     , uint32_t nonce
     );
 
+  bool is_swap_tx(const transaction& tx, const std::vector<tx_destination_entry>& destinations);
+  bool is_swap_tx(const transaction& tx);
 }
 
 BOOST_CLASS_VERSION(cryptonote::tx_source_entry, 0)
