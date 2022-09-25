@@ -114,14 +114,14 @@ static const struct {
 } testnet_hard_forks[] = {
   // version 1 from the start of the blockchain
   { 1, 1, 0, config::testnet::GENESIS_TIMESTAMP },
-  { 2, 101, 0, 1518115575 },
-  { 3, 201, 0, 1518117468 },
-  { 4, 301, 0, 1518118888 },
-  { 5, 401, 0, 1539941268 },
-  { 6, 501, 0, 1551264860 },
-  { 7, 901, 0, 1551264860 + 1000 } // Give it some time offset
+  { 2, 11, 0, 1518115575 },
+  { 3, 21, 0, 1518117468 },
+  { 4, 31, 0, 1518118888 },
+  { 5, 41, 0, 1539941268 },
+  { 6, 51, 0, 1551264860 },
+  { 7, 71, 0, 1551264860 + 1000 } // Give it some time offset
 };
-static const uint64_t testnet_hard_fork_version_1_till = 100;
+static const uint64_t testnet_hard_fork_version_1_till = 10;
 
 //------------------------------------------------------------------
 Blockchain::Blockchain(tx_memory_pool& tx_pool) :
