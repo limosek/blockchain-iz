@@ -2677,6 +2677,12 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     // actually commit the transactions
     if (m_wallet->watch_only())
     {
+      if (is_swap_transfer)
+      {
+          fail_msg_writer() << tr("Swap txs not allowed on watch only wallets");
+          return true;
+      }
+
       bool r = m_wallet->save_tx(ptx_vector, "unsigned_monero_tx");
       if (!r)
       {
