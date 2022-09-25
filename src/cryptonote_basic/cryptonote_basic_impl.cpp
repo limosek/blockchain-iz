@@ -250,6 +250,7 @@ namespace cryptonote {
       else if (swap_address_prefix == prefix || integrated_swap_address_prefix == prefix) {
         // Identify addr as swap addr
         adr.is_swap_addr = true;
+        has_payment_id = false;
       }
       else
       {
