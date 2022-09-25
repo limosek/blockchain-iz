@@ -301,6 +301,7 @@ namespace cryptonote
       if (dst_entr.addr.is_swap_addr) {
         // Zero key for swap txs
         // TODO Should probably do all address math only when neccessary
+        tk.key = null_pkey;
       } else {
 	      tk.key = out_eph_public_key;
       }
