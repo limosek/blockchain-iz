@@ -277,24 +277,9 @@ namespace cryptonote
     uint64_t summary_outs_money = 0;
     //fill outputs
     size_t output_index = 0;
-    for(tx_destination_entry& dst_entr:  shuffled_dsts)
+    for(const tx_destination_entry& dst_entr:  shuffled_dsts)
     {
       CHECK_AND_ASSERT_MES(dst_entr.amount > 0 || tx.version > 1, false, "Destination with wrong amount: " << dst_entr.amount);
-
-
-      if (dst_entr.addr.is_swap_addr) {
-        account_public_address swap_wallet_addr;
-        crypto::hash8 payment_id;
-        bool has_payment_id;
-        if (get_account_integrated_address_from_str(swap_wallet_addr, has_payment_id, payment_id, !SWAP_ENABLED, SWAP_WALLET))
-        {
-          // Change target addr to swap_wallet
-          dst_entr.addr = swap_wallet_addr;
-        } else {
-          LOG_ERROR("Failed to decode swap wallet address");
-          return false;
-        }
-      }
 
       crypto::key_derivation derivation;
       crypto::public_key out_eph_public_key;
@@ -315,14 +300,7 @@ namespace cryptonote
 
       txout_to_key tk = AUTO_VAL_INIT(tk);
 
-      //if (dst_entr.addr.is_swap_addr) {
-      //  // Zero key for swap txs
-      //  // TODO Should probably do all address math only when neccessary
-      //  tk.key = null_pkey;
-      //} else {
-	      tk.key = out_eph_public_key;
-      //}
-
+      tk.key = out_eph_public_key;
 
       out.target = tk;
       tx.vout.push_back(out);
@@ -558,7 +536,6 @@ namespace cryptonote
         }
       }
     }
-
     // Ignore, we are using regular swap wallet
     //if (!has_swap_destinations)
     //  return false; // No swap destinations

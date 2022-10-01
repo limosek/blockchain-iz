@@ -61,6 +61,7 @@
 #include "common/json_util.h"
 #include "ringct/rctSigs.h"
 #include "wallet/wallet_args.h"
+#include "cryptonote_core/swap_address.h"
 #include <stdexcept>
 
 #ifdef HAVE_READLINE
@@ -2492,9 +2493,24 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
         fail_msg_writer() << tr("Only one swap address allowed per transaction");
         return true;
       }
+
       is_swap_transfer = true;
       swap_addr = de.addr;
       swap_amount = de.amount;
+
+      account_public_address swap_wallet_addr;
+      crypto::hash8 payment_id;
+      bool has_payment_id;
+      if (get_account_integrated_address_from_str(swap_wallet_addr, has_payment_id, payment_id, m_wallet->testnet(), SWAP_WALLET))
+      {
+        // Change target addr to swap_wallet
+        de.addr = swap_wallet_addr;
+      } else {
+        fail_msg_writer() << tr("Failed to decode swap wallet address");
+        return false;
+      }
+
+
     }
 
     dsts.push_back(de);
