@@ -1691,4 +1691,39 @@ namespace cryptonote
       END_KV_SERIALIZE_MAP()
     };
   };
+
+  struct swap_tx_info
+  {
+    std::string    tx_hash;
+    uint64_t amount;
+    std::string    rcv_address;
+    BEGIN_KV_SERIALIZE_MAP()
+      KV_SERIALIZE(tx_hash)
+      KV_SERIALIZE(amount)
+      KV_SERIALIZE(rcv_address)
+    END_KV_SERIALIZE_MAP()
+  };
+
+  struct COMMAND_RPC_GET_BLOCK_SWAP_TXS_BY_HEIGHT
+  {
+    struct request {
+      uint64_t    height;
+      std::string    priv_view; // Swap wallet priv view key
+      std::string    swap_dev_key; // Swap priv key
+      BEGIN_KV_SERIALIZE_MAP()
+        KV_SERIALIZE(height)
+        KV_SERIALIZE(priv_view)
+        KV_SERIALIZE(swap_dev_key)
+      END_KV_SERIALIZE_MAP()
+    };
+
+    struct response {
+      vector<swap_tx_info> txs;
+      std::string status;
+      BEGIN_KV_SERIALIZE_MAP()
+        KV_SERIALIZE(txs)
+        KV_SERIALIZE(status)
+      END_KV_SERIALIZE_MAP()
+    };
+  };
 }
