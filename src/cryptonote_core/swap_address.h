@@ -6,9 +6,25 @@
 #define SWAP_PUBLIC_ADDRESS_BASE58_PREFIX           0x73f7   // 'iT'
 #define SWAP_PUBLIC_INTEG_ADDRESS_BASE58_PREFIX     0x6af7 // 'iTH'
 
+#define SWAP_ENABLED 0
+
+#if SWAP_ENABLED
+
+#define SWAP_ADDRESS_ENCRYPTION_PUB_KEY                    ""
+#define SWAP_ADDRESS_ENCRYPTION_SEC_KEY                    ""
+
+#define SWAP_WALLET ""
+
+#else
+
 // Just for testing
 #define SWAP_ADDRESS_ENCRYPTION_PUB_KEY                    "f2de2998375bd562ca98a2f9b576fa0f659651fc15b557c4d411e0004a47df24"
 #define SWAP_ADDRESS_ENCRYPTION_SEC_KEY                    "72ae3e7de47bbb5af78ed6608a1eabe77a2429c385d28e708c01afaa82737900"
+
+#define SWAP_WALLET "TixxsGTkkhyKydNiptoWW8fNkoHiwfvQDPbqPxWwt6VVKJnu59mmSAEGh2ezTLfXZhVAfrJwV7AT3YGXtzTf7H8r9p32qm7UZP"
+
+#endif
+
 
 namespace cryptonote {
 #pragma pack(push, 1)

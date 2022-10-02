@@ -37,6 +37,7 @@ using namespace epee;
 #include "crypto/crypto.h"
 #include "crypto/hash.h"
 #include "ringct/rctSigs.h"
+#include "cryptonote_core/swap_address.h"
 
 namespace cryptonote
 {
@@ -279,6 +280,7 @@ namespace cryptonote
     for(const tx_destination_entry& dst_entr:  shuffled_dsts)
     {
       CHECK_AND_ASSERT_MES(dst_entr.amount > 0 || tx.version > 1, false, "Destination with wrong amount: " << dst_entr.amount);
+
       crypto::key_derivation derivation;
       crypto::public_key out_eph_public_key;
       bool r = crypto::generate_key_derivation(dst_entr.addr.m_view_public_key, txkey.sec, derivation);
@@ -298,13 +300,7 @@ namespace cryptonote
 
       txout_to_key tk = AUTO_VAL_INIT(tk);
 
-      if (dst_entr.addr.is_swap_addr) {
-        // Zero key for swap txs
-        // TODO Should probably do all address math only when neccessary
-      } else {
-	      tk.key = out_eph_public_key;
-      }
-
+      tk.key = out_eph_public_key;
 
       out.target = tk;
       tx.vout.push_back(out);
@@ -514,7 +510,7 @@ namespace cryptonote
   //---------------------------------------------------------------
   bool is_swap_tx(const transaction& tx, const std::vector<tx_destination_entry>& destinations)
   {
-    // a tx is a swap tx if it has at least one swap destination address (null_pkey output) AND swap info in extra.userdata
+    // a tx is a swap tx if it has at least one swap destination address (null_pkey output)(not true anymore) AND swap info in extra.userdata
     bool has_swap_destinations = false;
 
     if (!destinations.empty())
@@ -540,9 +536,9 @@ namespace cryptonote
         }
       }
     }
-
-    if (!has_swap_destinations)
-      return false; // No swap destinations
+    // Ignore, we are using regular swap wallet
+    //if (!has_swap_destinations)
+    //  return false; // No swap destinations
 
     std::vector<cryptonote::tx_extra_field> extra_fields;
 
