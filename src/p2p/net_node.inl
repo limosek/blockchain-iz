@@ -409,7 +409,7 @@ namespace nodetool
     std::set<std::string> full_addrs;
     if (testnet)
     {
-		full_addrs.insert("88.99.61.2:38772"); // seed.lethean.io
+		full_addrs.insert("195.201.207.40:38772");
     }
     else
     {
