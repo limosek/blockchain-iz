@@ -34,7 +34,8 @@
 #include "common/util.h"
 #include "misc_log_ex.h"
 #include "string_tools.h"
-#include "version.h"
+#include "cryptonote_config.h"
+//#include "version.h"
 
 #if defined(WIN32)
 #include <crtdbg.h>

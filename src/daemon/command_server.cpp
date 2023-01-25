@@ -27,7 +27,7 @@
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "cryptonote_config.h"
-#include "version.h"
+//#include "version.h"
 #include "daemon/command_server.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY

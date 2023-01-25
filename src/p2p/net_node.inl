@@ -37,7 +37,7 @@
 #include <boost/thread/thread.hpp>
 #include <atomic>
 
-#include "version.h"
+//#include "version.h"
 #include "string_tools.h"
 #include "common/util.h"
 #include "common/dns_utils.h"

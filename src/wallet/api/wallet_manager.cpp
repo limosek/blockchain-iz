@@ -35,7 +35,7 @@
 #include "common/dns_utils.h"
 #include "common/util.h"
 #include "common/updates.h"
-#include "version.h"
+//#include "version.h"
 #include "net/http_client.h"
 
 #include <boost/filesystem.hpp>
