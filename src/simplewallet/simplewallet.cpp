@@ -61,6 +61,7 @@
 #include "common/json_util.h"
 #include "ringct/rctSigs.h"
 #include "wallet/wallet_args.h"
+#include "cryptonote_core/swap_address.h"
 #include <stdexcept>
 
 #ifdef HAVE_READLINE
@@ -2439,12 +2440,19 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     local_args.pop_back();
   }
 
+  bool is_swap_transfer = false;
+  cryptonote::account_public_address swap_addr;
+  uint64_t swap_amount = 0;
+
   vector<cryptonote::tx_destination_entry> dsts;
   for (size_t i = 0; i < local_args.size(); i += 2)
   {
     cryptonote::tx_destination_entry de;
     bool has_payment_id;
     crypto::hash8 new_payment_id;
+
+		// If destination is on new blockchain
+		// Swap addr flag should be set in following line
     if (!cryptonote::get_account_address_from_str_or_url(de.addr, has_payment_id, new_payment_id, m_wallet->testnet(), local_args[i], oa_prompter))
     {
       fail_msg_writer() << tr("failed to parse address");
@@ -2478,21 +2486,55 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
       return true;
     }
 
+    if (de.addr.is_swap_addr)
+    {
+      if (is_swap_transfer)
+      {
+        fail_msg_writer() << tr("Only one swap address allowed per transaction");
+        return true;
+      }
+
+      is_swap_transfer = true;
+      swap_addr = de.addr;
+      swap_amount = de.amount;
+
+      account_public_address swap_wallet_addr;
+      crypto::hash8 payment_id;
+      bool has_payment_id;
+      if (get_account_integrated_address_from_str(swap_wallet_addr, has_payment_id, payment_id, m_wallet->testnet(), SWAP_WALLET))
+      {
+        // Change target addr to swap_wallet
+        de.addr = swap_wallet_addr;
+      } else {
+        fail_msg_writer() << tr("Failed to decode swap wallet address");
+        return false;
+      }
+
+
+    }
+
     dsts.push_back(de);
   }
 
-  // prompt is there is no payment id and confirmation is required
-  if (!payment_id_seen && m_wallet->confirm_missing_payment_id())
-  {
-     std::string accepted = command_line::input_line(tr("No payment id is included with this transaction. Is this okay?  (Y/Yes/N/No): "));
-     if (std::cin.eof())
-       return true;
-     if (!command_line::is_yes(accepted))
-     {
-       fail_msg_writer() << tr("transaction cancelled.");
+  if (is_swap_transfer) {
+    // For now use random payment ids for swap transfers
+    crypto::hash payment_id;
+    generate_random_bytes_not_thread_safe(sizeof(crypto::hash), &payment_id);
+    set_swap_tx_extra(extra, payment_id, swap_addr);
+  } else {
+    // prompt is there is no payment id and confirmation is required
+    if (!payment_id_seen && m_wallet->confirm_missing_payment_id())
+    {
+       std::string accepted = command_line::input_line(tr("No payment id is included with this transaction. Is this okay?  (Y/Yes/N/No): "));
+       if (std::cin.eof())
+         return true;
+       if (!command_line::is_yes(accepted))
+       {
+         fail_msg_writer() << tr("transaction cancelled.");
 
-       return true; 
-     }
+         return true;
+       }
+    }
   }
 
   try
@@ -2601,7 +2643,16 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
         }
 
         std::stringstream prompt;
-        prompt << boost::format(tr("Sending %s.  ")) % print_money(total_sent);
+
+        if (is_swap_transfer)
+        {
+          message_writer(epee::console_color_cyan, true) << boost::format(tr("Sending(swapping) %s from iz blockchain to iT ")) % print_money(swap_amount);
+        }
+        else
+        {
+          prompt << boost::format(tr("Sending %s.  ")) % print_money(total_sent);
+        }
+
         if (ptx_vector.size() > 1)
         {
           prompt << boost::format(tr("Your transaction needs to be split into %llu transactions.  "
@@ -2642,6 +2693,12 @@ bool simple_wallet::transfer_main(int transfer_type, const std::vector<std::stri
     // actually commit the transactions
     if (m_wallet->watch_only())
     {
+      if (is_swap_transfer)
+      {
+          fail_msg_writer() << tr("Swap txs not allowed on watch only wallets");
+          return true;
+      }
+
       bool r = m_wallet->save_tx(ptx_vector, "unsigned_monero_tx");
       if (!r)
       {

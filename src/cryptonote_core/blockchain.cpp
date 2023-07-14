@@ -102,7 +102,8 @@ static const struct {
   { 5, 296287, 0, 1540279084 },
   // version 6
   { 6, 391500, 0, 1552132800 },
-  { 7, 1147126, 0, 1644148989 }	
+  { 7, 1147126, 0, 1644148989 },
+  { 8, 1500000, 0, 1691752271 }
 };
 static const uint64_t mainnet_hard_fork_version_1_till = 50000;
 
@@ -114,14 +115,15 @@ static const struct {
 } testnet_hard_forks[] = {
   // version 1 from the start of the blockchain
   { 1, 1, 0, config::testnet::GENESIS_TIMESTAMP },
-  { 2, 101, 0, 1518115575 },
-  { 3, 201, 0, 1518117468 },
-  { 4, 301, 0, 1518118888 },
-  { 5, 401, 0, 1539941268 },
-  { 6, 501, 0, 1551264860 },
-  { 7, 901, 0, 1551264860 + 1000 } // Give it some time offset
+  { 2, 11, 0, 1518115575 },
+  { 3, 21, 0, 1518117468 },
+  { 4, 31, 0, 1518118888 },
+  { 5, 41, 0, 1539941268 },
+  { 6, 51, 0, 1551264860 },
+  { 7, 71, 0, 1551264860 + 1000 },
+  { 8, 100, 0, 1551264860 + 9000 } // Give it some time offset
 };
-static const uint64_t testnet_hard_fork_version_1_till = 100;
+static const uint64_t testnet_hard_fork_version_1_till = 10;
 
 //------------------------------------------------------------------
 Blockchain::Blockchain(tx_memory_pool& tx_pool) :
@@ -3540,7 +3542,8 @@ bool Blockchain::update_next_cumulative_size_limit()
 		get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_4 ||
 		get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_5 ||
     	get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_6 ||
-    	get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_7)
+    	get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_7||
+    	get_current_hard_fork_version() == BLOCK_MAJOR_VERSION_8)
 	{
 		//support LTHN max cumulative size limit change since 65k: large blocks every 5 blocks only
 		//transaction size is also checked here.

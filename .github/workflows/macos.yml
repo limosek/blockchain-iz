@@ -1,6 +1,7 @@
 name: macOS
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'main'
@@ -49,30 +50,17 @@ jobs:
       run: |
         ${{env.CCACHE_SETTINGS}}
         make release-static-mac-x86_64 -j${HOMEBREW_MAKE_JOBS}
-    - name: Import Code-Signing Certificates for macOS
-      uses: Apple-Actions/import-codesign-certs@v1
-      with:
-        p12-file-base64: ${{ secrets.MAC_DEVELOPER_CERT }}
-        p12-password: ${{ secrets.MAC_DEVELOPER_PASS }}
-    - run: make ci-release
+    - run: LETHEAN_RELEASE=lethean-cli-macos make zip-release
     - run: chmod +x build/packaged/lethean*
-    - name: Codesign
-      env:
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-      run: |
-          cp LICENSE build/packaged/LICENSE
-          gon -log-level=info ./.github/gon-notarize.json
     - uses: actions/upload-artifact@v2
       with:
-        name: macOS
+        name: lethean-cli-macos
         path: |
-           lethean-cli-macos.dmg
-           lethean-cli-macos.zip
+           lethean-cli-macos.tar
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
         files: |
-          lethean-cli-macos.dmg
-          lethean-cli-macos.zip
+          lethean-cli-macos.tar
 

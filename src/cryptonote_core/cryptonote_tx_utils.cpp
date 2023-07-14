@@ -37,6 +37,7 @@ using namespace epee;
 #include "crypto/crypto.h"
 #include "crypto/hash.h"
 #include "ringct/rctSigs.h"
+#include "cryptonote_core/swap_address.h"
 
 namespace cryptonote
 {
@@ -169,48 +170,54 @@ namespace cryptonote
     keypair txkey = keypair::generate();
     remove_field_from_tx_extra(tx.extra, typeid(tx_extra_pub_key));
     add_tx_pub_key_to_extra(tx, txkey.pub);
+
     tx_key = txkey.sec;
 
-    // if we have a stealth payment id, find it and encrypt it with the tx key now
-    std::vector<tx_extra_field> tx_extra_fields;
-    if (parse_tx_extra(tx.extra, tx_extra_fields))
-    {
-      tx_extra_nonce extra_nonce;
-      if (find_tx_extra_field_by_type(tx_extra_fields, extra_nonce))
+    if (is_swap_tx(tx, destinations)) {
+      encrypt_user_data_with_tx_secret_key(txkey.sec, tx.extra);
+    } else {
+      // Only encrypt payment id if this is not swap tx.
+      // if we have a stealth payment id, find it and encrypt it with the tx key now
+      std::vector<tx_extra_field> tx_extra_fields;
+      if (parse_tx_extra(tx.extra, tx_extra_fields))
       {
-        crypto::hash8 payment_id = null_hash8;
-        if (get_encrypted_payment_id_from_tx_extra_nonce(extra_nonce.nonce, payment_id))
+        tx_extra_nonce extra_nonce;
+        if (find_tx_extra_field_by_type(tx_extra_fields, extra_nonce))
         {
-          LOG_PRINT_L2("Encrypting payment id " << payment_id);
-          crypto::public_key view_key_pub = get_destination_view_key_pub(destinations, sender_account_keys);
-          if (view_key_pub == null_pkey)
+          crypto::hash8 payment_id = null_hash8;
+          if (get_encrypted_payment_id_from_tx_extra_nonce(extra_nonce.nonce, payment_id))
           {
-            LOG_ERROR("Destinations have to have exactly one output to support encrypted payment ids");
-            return false;
-          }
+            LOG_PRINT_L2("Encrypting payment id " << payment_id);
+            crypto::public_key view_key_pub = get_destination_view_key_pub(destinations, sender_account_keys);
+            if (view_key_pub == null_pkey)
+            {
+              LOG_ERROR("Destinations have to have exactly one output to support encrypted payment ids");
+              return false;
+            }
 
-          if (!encrypt_payment_id(payment_id, view_key_pub, txkey.sec))
-          {
-            LOG_ERROR("Failed to encrypt payment id");
-            return false;
-          }
+            if (!encrypt_payment_id(payment_id, view_key_pub, txkey.sec))
+            {
+              LOG_ERROR("Failed to encrypt payment id");
+              return false;
+            }
 
-          std::string extra_nonce;
-          set_encrypted_payment_id_to_tx_extra_nonce(extra_nonce, payment_id);
-          remove_field_from_tx_extra(tx.extra, typeid(tx_extra_nonce));
-          if (!add_extra_nonce_to_tx_extra(tx.extra, extra_nonce))
-          {
-            LOG_ERROR("Failed to add encrypted payment id to tx extra");
-            return false;
+            std::string extra_nonce;
+            set_encrypted_payment_id_to_tx_extra_nonce(extra_nonce, payment_id);
+            remove_field_from_tx_extra(tx.extra, typeid(tx_extra_nonce));
+            if (!add_extra_nonce_to_tx_extra(tx.extra, extra_nonce))
+            {
+              LOG_ERROR("Failed to add encrypted payment id to tx extra");
+              return false;
+            }
+            LOG_PRINT_L1("Encrypted payment ID: " << payment_id);
           }
-          LOG_PRINT_L1("Encrypted payment ID: " << payment_id);
         }
       }
-    }
-    else
-    {
-      LOG_ERROR("Failed to parse tx extra");
-      return false;
+      else
+      {
+        LOG_ERROR("Failed to parse tx extra");
+        return false;
+      }
     }
 
     struct input_generation_context_data
@@ -273,6 +280,7 @@ namespace cryptonote
     for(const tx_destination_entry& dst_entr:  shuffled_dsts)
     {
       CHECK_AND_ASSERT_MES(dst_entr.amount > 0 || tx.version > 1, false, "Destination with wrong amount: " << dst_entr.amount);
+
       crypto::key_derivation derivation;
       crypto::public_key out_eph_public_key;
       bool r = crypto::generate_key_derivation(dst_entr.addr.m_view_public_key, txkey.sec, derivation);
@@ -289,10 +297,14 @@ namespace cryptonote
 
       tx_out out;
       out.amount = dst_entr.amount;
-      txout_to_key tk;
+
+      txout_to_key tk = AUTO_VAL_INIT(tk);
+
       tk.key = out_eph_public_key;
+
       out.target = tk;
       tx.vout.push_back(out);
+
       output_index++;
       summary_outs_money += dst_entr.amount;
     }
@@ -494,6 +506,64 @@ namespace cryptonote
     miner::find_nonce_for_given_block(bl, 1, 0);
     bl.invalidate_hashes();
     return true;
+  }
+  //---------------------------------------------------------------
+  bool is_swap_tx(const transaction& tx, const std::vector<tx_destination_entry>& destinations)
+  {
+    // a tx is a swap tx if it has at least one swap destination address (null_pkey output)(not true anymore) AND swap info in extra.userdata
+    bool has_swap_destinations = false;
+
+    if (!destinations.empty())
+    {
+      for (auto& d : destinations)
+      {
+        if (d.addr.is_swap_addr)
+        {
+          has_swap_destinations = true;
+          break;
+        }
+      }
+    }
+    else
+    {
+      // use tx outputs if destinations was not provided
+      for (auto& o : tx.vout)
+      {
+        if (o.target.type() == typeid(txout_to_key) && boost::get<txout_to_key>(o.target).key == null_pkey)
+        {
+          has_swap_destinations = true;
+          break;
+        }
+      }
+    }
+    // Ignore, we are using regular swap wallet
+    //if (!has_swap_destinations)
+    //  return false; // No swap destinations
+
+    std::vector<cryptonote::tx_extra_field> extra_fields;
+
+    if (cryptonote::parse_tx_extra(tx.extra, extra_fields)) {
+      cryptonote::tx_extra_nonce extra_nonce;
+      if (find_tx_extra_field_by_type(extra_fields, extra_nonce)) {
+        std::string buff;
+        if(!cryptonote::get_swapdata_encrypted_buff_from_extra_nonce(extra_nonce.nonce, buff)) {
+          return false; // No swap data
+        }
+      } else {
+        return false; // No extra nonce
+      }
+    } else {
+      return false; // No extra
+    }
+
+    // there is a swap data, consider it as a swap tx
+    return true;
+  }
+  //---------------------------------------------------------------
+  bool is_swap_tx(const transaction& tx)
+  {
+    static std::vector<tx_destination_entry> empty_destinations;
+    return is_swap_tx(tx, empty_destinations);
   }
   //---------------------------------------------------------------
 }

@@ -37,6 +37,8 @@ project(LetheanVPN)
 # shhhhh sleepy time errors, we know...
 add_definitions(-w)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 function (die msg)
   if (NOT WIN32)
     string(ASCII 27 Esc)

@@ -37,7 +37,7 @@
 #include <boost/thread/thread.hpp>
 #include <atomic>
 
-#include "version.h"
+//#include "version.h"
 #include "string_tools.h"
 #include "common/util.h"
 #include "common/dns_utils.h"
@@ -409,7 +409,7 @@ namespace nodetool
     std::set<std::string> full_addrs;
     if (testnet)
     {
-		full_addrs.insert("88.99.61.2:38772"); // seed.lethean.io
+		full_addrs.insert("195.201.207.40:38772");
     }
     else
     {
@@ -1133,7 +1133,10 @@ namespace nodetool
         max_random_index = std::min<uint64_t>(local_peers_count -1, 20);
         random_index = get_random_index_with_fixed_probability(max_random_index);
       } else {
-        random_index = crypto::rand<size_t>() % m_peerlist.get_gray_peers_count();
+        if (m_peerlist.get_gray_peers_count() > 0)
+          random_index = crypto::rand<size_t>() % m_peerlist.get_gray_peers_count();
+        else
+          continue;
       }
 
       CHECK_AND_ASSERT_MES(random_index < local_peers_count, false, "random_starter_index < peers_local.size() failed!!");

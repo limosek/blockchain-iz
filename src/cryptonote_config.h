@@ -33,6 +33,8 @@
 #include <string>
 #include <boost/uuid/uuid.hpp>
 
+#define MONERO_VERSION_FULL                             "5.0.0 - Smile"
+#define MONERO_RELEASE_NAME                             "Smile"
 #define CRYPTONOTE_DNS_TIMEOUT_MS                       20000
 
 #define CRYPTONOTE_MAX_BLOCK_NUMBER                     500000000
@@ -51,6 +53,7 @@
 #define BLOCK_MAJOR_VERSION_5                           5
 #define BLOCK_MAJOR_VERSION_6                           6
 #define BLOCK_MAJOR_VERSION_7                           7
+#define BLOCK_MAJOR_VERSION_8                           8
 #define CRYPTONOTE_BLOCK_FUTURE_TIME_LIMIT              500
 #define CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE             0
 

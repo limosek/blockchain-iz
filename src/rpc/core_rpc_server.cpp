@@ -43,6 +43,8 @@ using namespace epee;
 #include "crypto/hash.h"
 #include "rpc/rpc_args.h"
 #include "core_rpc_server_error_codes.h"
+#include "cryptonote_core/swap_address.h"
+#include "ringct/rctSigs.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "daemon.rpc"
@@ -1765,7 +1767,152 @@ namespace cryptonote
     return true;
   }
   //------------------------------------------------------------------------------------------------------------------------------
+  uint64_t decodeRctHelper(const rct::rctSig & rv, const crypto::public_key &pub, const crypto::secret_key &sec, unsigned int i, rct::key & mask)
+  {
+    crypto::key_derivation derivation;
+    bool r = crypto::generate_key_derivation(pub, sec, derivation);
+    if (!r)
+    {
+      LOG_ERROR("Failed to generate key derivation to decode rct output " << i);
+      return 0;
+    }
+    crypto::secret_key scalar1;
+    crypto::derivation_to_scalar(derivation, i, scalar1);
+    try
+    {
+      switch (rv.type)
+      {
+      case rct::RCTTypeSimple:
+        return rct::decodeRctSimple(rv, rct::sk2rct(scalar1), i, mask);
+      case rct::RCTTypeFull:
+        return rct::decodeRct(rv, rct::sk2rct(scalar1), i, mask);
+      default:
+        LOG_ERROR("Unsupported rct type: " << rv.type);
+        return 0;
+      }
+    }
+    catch (const std::exception &e)
+    {
+      LOG_ERROR("Failed to decode input " << i);
+      return 0;
+    }
+  }
 
+  //------------------------------------------------------------------------------------------------------------------------------
+  bool core_rpc_server::on_get_block_swap_txs_by_height(const COMMAND_RPC_GET_BLOCK_SWAP_TXS_BY_HEIGHT::request& req, COMMAND_RPC_GET_BLOCK_SWAP_TXS_BY_HEIGHT::response& res, epee::json_rpc::error& error_resp)
+  {
+    if(!check_core_busy())
+    {
+      error_resp.code = CORE_RPC_ERROR_CODE_CORE_BUSY;
+      error_resp.message = "Core is busy.";
+      return false;
+    }
+
+    Blockchain& bchain = m_core.get_blockchain_storage();
+
+    if (bchain.get_current_blockchain_height() < req.height)
+    {
+      error_resp.code = CORE_RPC_ERROR_CODE_WRONG_PARAM;
+      error_resp.message = "Invalid height param";
+      return false;
+    }
+
+    block target_block = AUTO_VAL_INIT(target_block);
+    if(!bchain.get_block_by_hash(bchain.get_block_id_by_height(req.height), target_block))
+    {
+      error_resp.code = CORE_RPC_ERROR_CODE_INTERNAL_ERROR;
+      error_resp.message = "Couldn't get block data";
+      return false;
+    }
+
+    crypto::secret_key priv_view;
+    if (!epee::string_tools::hex_to_pod(req.priv_view, priv_view)) {
+      error_resp.code = CORE_RPC_ERROR_CODE_WRONG_PARAM;
+      error_resp.message = "Couldn't decode view key";
+      return false;
+    }
+
+    crypto::secret_key swap_dev_key;
+    if (!epee::string_tools::hex_to_pod(req.swap_dev_key, swap_dev_key)) {
+      error_resp.code = CORE_RPC_ERROR_CODE_WRONG_PARAM;
+      error_resp.message = "Couldn't decode swap dev key";
+      return false;
+    }
+
+    account_public_address swap_wallet_addr;
+    crypto::hash8 payment_id;
+    bool has_payment_id;
+    if (!get_account_integrated_address_from_str(swap_wallet_addr, has_payment_id, payment_id, !SWAP_ENABLED, SWAP_WALLET))
+    {
+      error_resp.code = CORE_RPC_ERROR_CODE_WRONG_PARAM;
+      error_resp.message = "Couldn't decode swap wallet address";
+      return false;
+    }
+
+    for(const auto& blk_tx_hash : target_block.tx_hashes)
+    {
+      try {
+        transaction blk_tx = bchain.get_db().get_tx(blk_tx_hash);
+        if (is_swap_tx(blk_tx))
+        {
+          account_public_address swap_addr = AUTO_VAL_INIT(swap_addr);
+          cryptonote::get_swap_data_from_tx(blk_tx, swap_dev_key, swap_addr);
+
+          // Check for tx public key
+          crypto::public_key tx_pub = get_tx_pub_key_from_extra(blk_tx);
+
+          if(null_pkey == tx_pub) {
+            error_resp.code = CORE_RPC_ERROR_CODE_WRONG_PARAM;
+            error_resp.message = "Couldn't get tx pub key";
+            return false;
+          }
+
+          crypto::key_derivation derivation;
+          generate_key_derivation(tx_pub, priv_view, derivation);
+
+          uint64_t total_amount = 0;
+          for (int i = 0; i < blk_tx.vout.size(); i++)
+          {
+            bool received = false;
+
+            if (blk_tx.vout[i].target.type() !=  typeid(txout_to_key))
+            {
+               LOG_ERROR("wrong type id in transaction out");
+               continue;
+            }
+
+            // See if we own the out
+            received = is_out_to_acc_precomp(swap_wallet_addr.m_spend_public_key, boost::get<txout_to_key>(blk_tx.vout[i].target), derivation, i);
+            if (received)
+            {
+              cryptonote::keypair in_ephemeral;
+              crypto::key_image key_image;
+              rct::key mask;
+              // If we do, decode real amount
+              uint64_t money_transfered = decodeRctHelper(blk_tx.rct_signatures, tx_pub, priv_view, i, mask);
+              total_amount += money_transfered;
+            } else {
+              continue;
+            }
+          }
+
+          swap_tx_info tx_data = {
+            .tx_hash = epee::string_tools::pod_to_hex(blk_tx_hash),
+            .amount = total_amount,
+            .rcv_address = get_account_address_as_str(true, swap_addr)
+          };
+
+          res.txs.push_back(tx_data);
+        }
+      } catch (...) {
+        continue;
+      }
+    }
+
+    res.status = CORE_RPC_STATUS_OK;
+    return true;
+  }
+  //------------------------------------------------------------------------------------------------------------------------------
   const command_line::arg_descriptor<std::string> core_rpc_server::arg_rpc_bind_port = {
       "rpc-bind-port"
     , "Port for RPC server"

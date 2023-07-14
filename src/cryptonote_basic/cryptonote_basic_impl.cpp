@@ -42,6 +42,7 @@ using namespace epee;
 #include "crypto/hash.h"
 #include "common/int-util.h"
 #include "common/dns_utils.h"
+#include "cryptonote_core/swap_address.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "cn"
@@ -93,7 +94,7 @@ namespace cryptonote {
     const int emission_speed_factor = EMISSION_SPEED_FACTOR_PER_MINUTE - (target_minutes-1);
 	const uint64_t orig_already_generated_coins = already_generated_coins;
 
-	if (version < BLOCK_MAJOR_VERSION_7)
+	if (version < BLOCK_MAJOR_VERSION_8)
 	{
 		if (orig_already_generated_coins >= UINT64_C(14992413379483553)) {
 			already_generated_coins -= UINT64_C(14992032107906461); //premine minus the normal block 2 emission
@@ -177,6 +178,10 @@ namespace cryptonote {
     uint64_t address_prefix = testnet ?
       config::testnet::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX : config::CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX;
 
+    if(adr.is_swap_addr) {
+      address_prefix = SWAP_PUBLIC_ADDRESS_BASE58_PREFIX;
+    }
+
     return tools::base58::encode_addr(address_prefix, t_serializable_object_to_blob(adr));
   }
   //-----------------------------------------------------------------------
@@ -219,6 +224,11 @@ namespace cryptonote {
     uint64_t integrated_address_prefix = testnet ?
       config::testnet::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX : config::CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX;
 
+    uint64_t swap_address_prefix = SWAP_PUBLIC_ADDRESS_BASE58_PREFIX;
+    uint64_t integrated_swap_address_prefix = SWAP_PUBLIC_INTEG_ADDRESS_BASE58_PREFIX;
+
+    adr.is_swap_addr = false;
+
     if (2 * sizeof(public_address_outer_blob) != str.size())
     {
       blobdata data;
@@ -237,7 +247,13 @@ namespace cryptonote {
       {
         has_payment_id = false;
       }
-      else {
+      else if (swap_address_prefix == prefix || integrated_swap_address_prefix == prefix) {
+        // Identify addr as swap addr
+        adr.is_swap_addr = true;
+        has_payment_id = false;
+      }
+      else
+      {
         LOG_PRINT_L1("Wrong address prefix: " << prefix << ", expected " << address_prefix << " or " << integrated_address_prefix);
         return false;
       }

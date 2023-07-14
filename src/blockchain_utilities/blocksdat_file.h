@@ -46,7 +46,7 @@
 #include <atomic>
 
 #include "common/command_line.h"
-#include "version.h"
+//#include "version.h"
 
 #include "blockchain_utilities.h"
 

@@ -51,11 +51,11 @@ jobs:
         ${{env.CCACHE_SETTINGS}}
         make release-static-win64-boost
         make release-static-win64 -j2
-    - run: LETHEAN_RELEASE=windows make zip-release
+    - run: LETHEAN_RELEASE=lethean-cli-windows make zip-release
     - uses: actions/upload-artifact@v2
       with:
         name: windows.tar
-        path: ${{ github.workspace }}/build/windows.tar
+        path: ${{ github.workspace }}/build/lethean-cli-windows.tar
     - name: Get the version
       id: get_version
       if: startsWith(github.ref, 'refs/tags/')
@@ -64,5 +64,5 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: ${{ github.workspace }}/build/windows.tar
+        files: ${{ github.workspace }}/build/lethean-cli-windows.tar
 
