@@ -33,20 +33,6 @@ endif()
 
 cmake_minimum_required(VERSION 2.8.7)
 
-
-list(INSERT CMAKE_MODULE_PATH 0
-        "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-include(HunterGate)
-include(Hunter/HunterCacheServers)
-set(HUNTER_CONFIGURATION_TYPES Release CACHE STRING "Build type of Hunter packages")
-set(HUNTER_JOBS_NUMBER 6 CACHE STRING "Number of parallel builds used by Hunter")
-HunterGate(
-        URL "https://github.com/cpp-pm/hunter/archive/v0.24.15.tar.gz"
-        SHA1 "8010d63d5ae611c564889d5fe12d3cb7a45703ac"
-        LOCAL
-)
-
 project(LetheanVPN)
 # shhhhh sleepy time errors, we know...
 add_definitions(-w)
@@ -279,7 +265,6 @@ if (DATABASE STREQUAL "lmdb")
   set(BLOCKCHAIN_DB DB_LMDB)
   add_definitions("-DDEFAULT_DB_TYPE=\"lmdb\"")
 elseif (DATABASE STREQUAL "berkeleydb")
-  hunter_add_package(BerkeleyDB)
   find_package(BerkeleyDB)
   if(NOT BERKELEY_DB)
       die("Found BerkeleyDB includes, but could not find BerkeleyDB library. Please make sure you have installed libdb and libdb-dev / libdb++-dev or the equivalent.")
@@ -321,7 +306,6 @@ elseif (ARM AND STATIC)
   set(DEFAULT_STACK_TRACE OFF)
   set(LIBUNWIND_LIBRARIES "")
 else()
-  hunter_add_package(Libunwind)
   find_package(Libunwind)
   if(LIBUNWIND_FOUND)
     set(DEFAULT_STACK_TRACE ON)
@@ -348,7 +332,7 @@ if (APPLE AND NOT IOS)
     message(STATUS "Using OpenSSL found at ${OPENSSL_ROOT_DIR}")
   endif()
 endif()
-hunter_add_package(OpenSSL)
+
 find_package(OpenSSL REQUIRED)
 if(STATIC AND NOT IOS)
   if(UNIX)
@@ -671,7 +655,6 @@ if(STATIC)
   set(Boost_USE_STATIC_LIBS ON)
   set(Boost_USE_STATIC_RUNTIME ON)
 endif()
-hunter_add_package(Boost COMPONENTS system filesystem thread timer date_time chrono regex serialization atomic program_options locale log)
 find_package(Boost 1.58 QUIET REQUIRED COMPONENTS system filesystem thread date_time chrono regex serialization program_options)
 
 set(CMAKE_FIND_LIBRARY_SUFFIXES ${OLD_LIB_SUFFIXES})
@@ -708,8 +691,7 @@ if(BUILD_GUI_DEPS)
 endif()
 
 if(USE_READLINE)
-  hunter_add_package(readline)
-  find_package(readline)
+  find_package(Readline)
   if(READLINE_FOUND AND GNU_READLINE_FOUND)
     add_definitions(-DHAVE_READLINE)
     include_directories(${Readline_INCLUDE_DIR})
