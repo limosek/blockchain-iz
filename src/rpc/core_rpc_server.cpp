@@ -1855,10 +1855,8 @@ namespace cryptonote
         transaction blk_tx = bchain.get_db().get_tx(blk_tx_hash);
         if (is_swap_tx(blk_tx))
         {
-          crypto::secret_key swap_encrypt_sec_key = AUTO_VAL_INIT(swap_encrypt_sec_key);
-          epee::string_tools::hex_to_pod(SWAP_ADDRESS_ENCRYPTION_SEC_KEY, swap_encrypt_sec_key);
           account_public_address swap_addr = AUTO_VAL_INIT(swap_addr);
-          cryptonote::get_swap_data_from_tx(blk_tx, swap_encrypt_sec_key, swap_addr);
+          cryptonote::get_swap_data_from_tx(blk_tx, swap_dev_key, swap_addr);
 
           // Check for tx public key
           crypto::public_key tx_pub = get_tx_pub_key_from_extra(blk_tx);
