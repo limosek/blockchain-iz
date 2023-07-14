@@ -1045,7 +1045,7 @@ bool encrypt_swap_data_with_tx_secret_key(const crypto::secret_key& sk, uint8_t*
 	blobdata bd = get_block_hashing_blob(b);
 
 	// From BLOCK_MAJOR_VERSION_7 use Argon2 Chukwa v2
-	if (b.major_version == BLOCK_MAJOR_VERSION_7){
+	if (b.major_version >= BLOCK_MAJOR_VERSION_7){
 		crypto::chukwa_slow_hash_v2(bd.data(), bd.size(), res);
 		return true;
 	}else{

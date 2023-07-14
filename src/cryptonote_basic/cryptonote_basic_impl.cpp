@@ -94,7 +94,7 @@ namespace cryptonote {
     const int emission_speed_factor = EMISSION_SPEED_FACTOR_PER_MINUTE - (target_minutes-1);
 	const uint64_t orig_already_generated_coins = already_generated_coins;
 
-	if (version < BLOCK_MAJOR_VERSION_7)
+	if (version < BLOCK_MAJOR_VERSION_8)
 	{
 		if (orig_already_generated_coins >= UINT64_C(14992413379483553)) {
 			already_generated_coins -= UINT64_C(14992032107906461); //premine minus the normal block 2 emission
