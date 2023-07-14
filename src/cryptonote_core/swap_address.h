@@ -10,10 +10,10 @@
 
 #if SWAP_ENABLED
 
-#define SWAP_ADDRESS_ENCRYPTION_PUB_KEY                    ""
+#define SWAP_ADDRESS_ENCRYPTION_PUB_KEY                    "065d5f161cb39b2cf013183d34986f209bb7fc474f3633fa4cdc660296b4b433"
 #define SWAP_ADDRESS_ENCRYPTION_SEC_KEY                    ""
 
-#define SWAP_WALLET ""
+#define SWAP_WALLET "iz469K3VwJ2SxQ2rKgRen3Kb5LTy7UnnR9hFT7g7kigbX9BczkYWgNdJrFjsaiJfdXMJnGgDggtPDBQx8nf9xPMA2uhvbb77Q"
 
 #else
 
