@@ -3,7 +3,8 @@
 case $1 in
 
 sh|bash)
-  bash
+  shift
+  bash "$@"
   ;;
 
 letheand)
@@ -26,8 +27,15 @@ letheand)
   ;;
 
 wallet)
+  shift
   echo lethean-wallet-cli "$@" >&2
   lethean-wallet-cli "$@"
+  ;;
+  
+wallet-rpc)
+  shift
+  echo lethean-wallet-rpc "$@" >&2
+  lethean-wallet-rpc "$@" 
   ;;
 
 *)
